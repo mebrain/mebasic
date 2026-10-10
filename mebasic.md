@@ -156,9 +156,11 @@ creation to a capable agent using the skill-configured model and reasoning effor
 existing descriptions and writes only inside this directory. It surveys the
 description kinds above and creates source-backed pages for each applicable kind,
 including useful flows and concepts beyond modules.
-It records covered files or a reason a kind does not apply in private
-`.mebasic/generation-coverage.json`; the IDE checks that all kinds were assessed and listed files exist before marking
-generation ready. A modules-only result is insufficient when other kinds apply. Create `screenshots/` even if no verified captures
+The AI judges which descriptions are useful and reviews its work for omissions.
+The IDE does not enforce category lists, filenames, or a coverage-report schema;
+the specification guides interpretation rather than acting as a compiler grammar.
+A successful generation worker enables maintenance; report unfinished work clearly.
+Create `screenshots/` even if no verified captures
 are available. Report failures and
 missing screenshots instead of fabricating content; a failed generation remains
 pending and must not silently enable automatic maintenance.

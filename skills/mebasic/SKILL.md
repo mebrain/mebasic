@@ -39,9 +39,10 @@ user edits and implementation locations; and maintains private history and
 baselines under `mebasic-src/.mebasic/`. Every MeBasic write stays inside
 `mebasic-src/`; source elsewhere is read-only evidence. Initial generation must inspect actual source and
 survey all applicable description kinds, not stop at modules. Do not invent
-content for kinds that do not apply. Record files or a genuine omission reason per kind
-in `.mebasic/generation-coverage.json`, and create `screenshots/` inside the
-directory. The IDE owns the
+content for kinds that do not apply. Use the current specification and judgment to choose
+useful descriptions; review for omissions and report unfinished work in your reply.
+No fixed category checklist or coverage report is required. Create `screenshots/`
+for real UI captures as the specification describes. The IDE owns the
 project configuration; do not remove it or create competing marker files.
 Use only real screenshots. Report changes, checks and unresolved conflicts.
 Do not delegate again from the worker. Automatic maintenance must not regenerate
