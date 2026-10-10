@@ -14,8 +14,9 @@ description: >
 
 MeBasic is the user-facing interpretation of complex source code. This IDE
 helps users explore that interpretation without needing to know the underlying
-language. The specification is a flexible guideline, not a strict grammar.
-Use the structure where it helps understanding; omit unnecessary detail.
+language. Descriptions use flexible prose rather than a strict grammar. The top-level folder
+structure below is mandatory; flexibility applies to the explanations inside it,
+not to folder names or placement. Omit unnecessary detail within descriptions.
 
 Start with what the project does, who uses it, and its main concepts. Explain
 purpose and useful behaviour first, then let links lead to deeper detail.
@@ -66,9 +67,43 @@ Ordinary source edits requested by the user are separate from MeBasic maintenanc
   These are real screenshots of the project UI, not invented mockups. Keep their
   provenance and capture date in the related description when useful. Omit a
   screenshot reference when no verified image is available.
-- Group descriptions by kind in folders such as `modules/`, `objects/`, `flow/`,
-  `algorithms/`, `constraints/`, `ui/`, `datastores/`, `widgets/` and `events/`.
-  A folder may hold subfolders that group its files.
+- Every generated MeBasic project must create these exact folders directly under
+  `mebasic-src/`, with these exact lowercase names:
+
+  ```text
+  mebasic-src/
+    modules/
+    objects/
+    flow/
+    algorithms/
+    constraints/
+    ui/
+    datastores/
+    widgets/
+    events/
+    screenshots/
+    context/
+  ```
+
+  This is the MeBasic method, not a suggestion. Do not rename, merge, omit or nest
+  these top-level folders under another category. In particular, `modules/objects/`,
+  `modules/flow/` and `modules/ui/` are not substitutes for the required folders.
+  Populate each description category with its own source-grounded content as
+  defined below: modules contain modules, objects contain objects, and so on.
+  If the project has no applicable concept for a category, keep that folder and
+  include a short Markdown explanation of why it does not apply; never invent
+  program features to fill it. `screenshots/` contains only real available UI
+  captures and may remain empty; `context/` contains the portable project context.
+  Subfolders may group descriptions within their correct category but must not
+  relocate another category beneath it.
+- During explicitly approved regeneration, correct earlier AI-created nesting
+  within `mebasic-src/`: preserve description content and user edits, relocate it
+  to the proper category, and repair links and context references. Existing AI
+  output or remembered context is not evidence that the user chose that layout.
+  Record moves in private history. Do not move implementation files. If an actual
+  explicit user instruction conflicts, report the conflict instead of silently
+  overriding it.
+
 - One file per thing described, named in lowercase letters and digits, then
   its primitive's suffix: `_mod.md`, `_obj.md`, `_flow.md`, `_alg.md`,
   `_con.md`, `_ui.md`, `_store.md`, `_widget.md` or `_event.md`, respectively.
@@ -188,9 +223,10 @@ creation to a capable agent using the skill-configured model and reasoning effor
 existing descriptions and writes only inside this directory. It surveys the
 description kinds above and creates source-backed pages for each applicable kind,
 including useful flows and concepts beyond modules.
-The AI judges which descriptions are useful and reviews its work for omissions.
-The IDE does not enforce category lists, filenames, or a coverage-report schema;
-the specification guides interpretation rather than acting as a compiler grammar.
+The AI judges useful content within each required category and reviews the result
+for omissions and correct top-level placement before declaring completion. The
+folder layout is mandatory authoring guidance from this specification; the IDE
+does not impose a separate hardcoded language validator or coverage-report schema.
 A successful generation worker enables maintenance; report unfinished work clearly.
 Create `screenshots/` even if no verified captures
 are available. Report failures and

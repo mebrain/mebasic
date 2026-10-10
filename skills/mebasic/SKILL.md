@@ -47,11 +47,15 @@ and conversation transcripts out of it. The worker edits only affected `mebasic-
 user edits and implementation locations; and maintains private history and
 baselines under `mebasic-src/.mebasic/`. Every MeBasic write stays inside
 `mebasic-src/`; source elsewhere is read-only evidence. Initial generation must inspect actual source and
-survey all applicable description kinds, not stop at modules. Do not invent
-content for kinds that do not apply. Use the current specification and judgment to choose
-useful descriptions; review for omissions and report unfinished work in your reply.
-No fixed category checklist or coverage report is required. Create `screenshots/`
-for real UI captures as the specification describes. The IDE owns the
+create every exact top-level folder required by the current specification and fill
+each description category with its own content. Folder names and placement are
+mandatory, not discretionary: never put other categories under modules. Use
+judgment for the explanations inside each category; document genuine inapplicability
+rather than inventing features. In approved regeneration, correct earlier AI nesting
+while preserving content and user edits, repairing links and context, and recording
+moves. Do not mistake existing AI organization for a user instruction.
+Review content and top-level placement before completion; no machine-readable
+coverage report is required. Keep only real captures in screenshots. The IDE owns the
 project configuration; do not remove it or create competing marker files.
 Use only real screenshots. Report changes, checks and unresolved conflicts.
 Do not delegate again from the worker. Automatic maintenance must not regenerate
