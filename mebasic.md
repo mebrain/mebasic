@@ -26,7 +26,7 @@ signatures. Source details remain available as supporting evidence.
 ## Project opt-in and containment
 
 Opening a folder does not make it a MeBasic project. Without a valid
-`mebasic-src/<name>.mebasic` configuration, show a warning on the left offering
+`mebasic-src/<name>.mebasic` configuration, show a warning in the IDE's Code column offering
 Generate MeBasic. Do not create folders, install a specification, write memory,
 or generate descriptions until the user explicitly approves generation. Neither
 an existing `mebasic-src/` directory nor substantial coding work implies consent.
@@ -66,12 +66,12 @@ Ordinary source edits requested by the user are separate from MeBasic maintenanc
   These are real screenshots of the project UI, not invented mockups. Keep their
   provenance and capture date in the related description when useful. Omit a
   screenshot reference when no verified image is available.
-- One folder per primitive, as the toolbox below names it. A folder may hold
-  subfolders that group its files.
+- Group descriptions by kind in folders such as `modules/`, `objects/`, `flow/`,
+  `algorithms/`, `constraints/`, `ui/`, `datastores/`, `widgets/` and `events/`.
+  A folder may hold subfolders that group its files.
 - One file per thing described, named in lowercase letters and digits, then
   its primitive's suffix: `_mod.md`, `_obj.md`, `_flow.md`, `_alg.md`,
-  `_con.md`, `_ui.md`, `_store.md`, `_widget.md` or `_event.md`, respectively,
-  in toolbox order.
+  `_con.md`, `_ui.md`, `_store.md`, `_widget.md` or `_event.md`, respectively.
 - Statements are bullets inside modules, not separate files or folders.
 - No README or index files: each file is its own read-me.
 - `modules/project_mod.md` is the starting point: purpose, users, main concepts
@@ -103,8 +103,7 @@ filename without `.md` and its primitive suffix so the file remains editable.
 
 Links are relative paths to `.md` files and must lead to a file that exists.
 Link related descriptions where they help readers follow ownership, use,
-dependencies or data movement. The specification's `toolbox` maps primitives
-to folders; description files do not need it.
+dependencies or data movement. The folders group descriptions by kind.
 
 ### Module
 
@@ -150,7 +149,7 @@ Choose short headings that answer these questions:
 
 ## Generating a missing interpretation
 
-The IDE offers Generate MeBasic with the left-side warning for an unregistered
+The IDE offers Generate MeBasic below the warning in its Code column for an unregistered
 project. Confirmation is required before any project writes. The IDE creates the
 configuration and installs language resources inside `mebasic-src/`, then delegates
 creation to a small, inexpensive agent. The worker reads actual source, preserves
@@ -255,15 +254,5 @@ Event, which leads to that flow. These example files are illustrative, not requi
 project concepts; create them before using actual Markdown links.
 
 ---
-toolbox:
-  - module: modules
-  - object: objects
-  - flow: flow
-  - algorithm: algorithms
-  - constraint: constraints
-  - uipage: ui
-  - datastore: datastores
-  - widget: widgets
-  - event: events
 code: []
 ---
