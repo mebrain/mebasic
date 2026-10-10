@@ -29,12 +29,18 @@ signatures. Source details remain available as supporting evidence.
   The IDE keeps a separate checkout at `mebasic/mebasic.md`.
   Whenever a project is loaded or restored, the IDE places its latest version
   at `<project>/.mebasic/mebasic.md`.
-- MeBasic Markdown descriptions live in `<project>/src/`; these are the files
-  the user primarily reads. Implementation code moves to `<project>/inner-src/`,
-  available when the user wants to inspect the underlying source. For example,
-  `src/modules/project_mod.md` explains the project and
-  `src/objects/document_obj.md` explains a document, with supporting code paths
+- MeBasic Markdown descriptions live in `<project>/mebasic-src/`; these are the files
+  the user primarily reads. Preserve implementation files in their existing
+  locations; generating MeBasic never authorises moving or rewriting them.
+  This IDE repository uses `inner-src/`, but other projects may use any layout.
+  For example,
+  `mebasic-src/modules/project_mod.md` explains the project and
+  `mebasic-src/objects/document_obj.md` explains a document, with supporting code paths
   pointing into `inner-src/`.
+- Keep captured UI images in `<project>/mebasic-src/screenshots/` (PNG or JPEG).
+  These are real screenshots of the project UI, not invented mockups. Keep their
+  provenance and capture date in the related description when useful. Omit a
+  screenshot reference when no verified image is available.
 - One folder per primitive, as the toolbox below names it. A folder may hold
   subfolders that group its files.
 - One file per thing described, named in lowercase letters and digits, then
@@ -54,11 +60,21 @@ Description files normally follow this order:
    - `title`: the name of what it describes.
    - `summary`: one sentence, at most 160 characters.
    - `description: >` then indented lines: a few sentences in plain words.
+   - For a UI page, `screenshot: screenshots/page.png` points to the relevant UI
+     image, relative to `mebasic-src/`. It must exist inside `screenshots/`.
+     Selecting that UI description shows the screenshot in one pane and the
+     editable Markdown description in the other. For example:
+     `screenshot: screenshots/settings.png`.
 2. **`# Title`**: the one heading of that level, the same as `title`.
 3. **The body**, as its primitive gives it below.
 4. **Bottom matter**, between `---` lines at the very end: `code:`, then
    an indented YAML list of paths naming supporting code from the repository
    root. Use `code: []` when there is no implementation evidence yet.
+
+The IDE displays each description's front-matter `title`, rather than its
+filename. Primitive suffixes such as `_mod` and `_ui` remain in filenames but
+are hidden in the interface. If the title is missing or malformed, use the
+filename without `.md` and its primitive suffix so the file remains editable.
 
 Links are relative paths to `.md` files and must lead to a file that exists.
 Link related descriptions where they help readers follow ownership, use,
@@ -107,36 +123,57 @@ Choose short headings that answer these questions:
   Explain the visible result and link the relevant flow, without enumerating
   individual handler functions. Events can come from users or the system.
 
+## Generating a missing interpretation
+
+The IDE offers Generate MeBasic above the MeBasic sidebar when a loaded project
+has no `mebasic-src/`. The selected local assistant uses the companion skill to
+delegate creation to a small, inexpensive agent. That worker reads the installed
+specification and actual project source before creating linked descriptions and
+the screenshots folder. Preserve an existing interpretation and all implementation
+files; generation is not permission to overwrite, move or rewrite source code.
+Explain generation failures and missing screenshots instead of fabricating content.
+
 ## Accuracy
 
 Ground explanations in actual source and keep supporting code paths current.
+After coding, evaluate whether the interpretation has meaningfully changed. Skip
+formatting, internal refactors and other trivial changes when existing descriptions
+remain accurate. Changes to behaviour, concepts, responsibilities, relationships,
+user terminology or constraints require updates to the affected descriptions and
+links only. Judge meaning, not diff size; a one-line behaviour change can matter.
+Create an initial interpretation when explicitly requested or when substantive
+project work needs one. Never regenerate an existing tree wholesale.
+The companion [MeBasic skill](skills/mebasic/SKILL.md) governs this decision and
+delegation to a separate small, inexpensive agent; model selection is configurable
+and must not be hardcoded in the IDE.
 Distinguish observed behaviour from inference, intended behaviour and missing
 implementation. Update affected descriptions when source changes; flag stale
 or uncertain explanations instead of presenting guesses as facts.
 
 ## Guidance for the implementing LLM
 
-- Read the project-local specification, existing `src/` descriptions and
-  `src/constraints/` before working. Maintain the MeBasic interpretation of the
+- Read the project-local specification, existing `mebasic-src/` descriptions and
+  `mebasic-src/constraints/` before working. Maintain the MeBasic interpretation of the
   current project (including MeBrain when that is the project being described).
   Work at the level of concepts and responsibilities, not individual functions.
-- Read the relevant `inner-src/` implementation before explaining it. After an
-  implementation change, update only the affected descriptions, relationships
-  and supporting paths. Keep user-facing names consistent across `src/`.
-- Never overwrite user changes in `src/`. Re-read each file immediately before
+- Read the relevant implementation in its actual locations before explaining it.
+  After an implementation change, evaluate whether descriptions remain accurate;
+  when needed, update only affected descriptions, relationships and supporting paths.
+  Keep user-facing names consistent across `mebasic-src/`.
+- Never overwrite user changes in `mebasic-src/`. Re-read each file immediately before
   editing and compare it with the last recorded baseline. Preserve user wording,
   names, additions and deletions; make small edits around them. If a change
   conflicts with the user's text, leave that text intact, record the conflict
   and ask for a resolution. Missing history means unknown authorship, not
   permission to regenerate a file. Never replace the whole tree from a template.
 - Carry user renames, terminology changes and changed concepts into all affected
-  `src/` descriptions and links, whether the change came from an edited file,
+  `mebasic-src/` descriptions and links, whether the change came from an edited file,
   implementation change or conversation. Do not silently restore an old name.
   Preserve a requested behaviour as intent if the implementation does not yet
   match it, and explain the discrepancy. A description edit alone is not proof
   that the implementation changed or permission for unrelated code changes.
 - Record the user's project instructions and corrections in relevant files under
-  `src/constraints/`, including their origin, scope and affected descriptions.
+  `mebasic-src/constraints/`, including their origin, scope and affected descriptions.
   Merge related rules without losing earlier context; explicitly mark superseded
   instructions. Keep requested rules distinguishable from verified enforcement.
 - Keep an internal change record in `.mebasic/change-history.jsonl` and a latest
