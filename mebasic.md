@@ -23,12 +23,37 @@ MeBasic operates above the function level: describe concepts, responsibilities,
 relationships and journeys, without a function-by-function inventory or call
 signatures. Source details remain available as supporting evidence.
 
+## Project opt-in and containment
+
+Opening a folder does not make it a MeBasic project. Without a valid
+`mebasic-src/<name>.mebasic` configuration, show a warning on the left offering
+Generate MeBasic. Do not create folders, install a specification, write memory,
+or generate descriptions until the user explicitly approves generation. Neither
+an existing `mebasic-src/` directory nor substantial coding work implies consent.
+
+Approved generation creates one JSON `<name>.mebasic` file in the root of
+`mebasic-src/`. It identifies the project (`format: "mebasic"`, `version: 1`,
+`name`) and holds all MeBasic project configuration: generation status, maintenance
+settings/model overrides and project preferences. Preserve unknown fields.
+A valid configuration is the opt-in marker; an incomplete generation stays pending
+until retried explicitly. Once generation is ready, maintain affected descriptions
+automatically according to the skill. Invalid or ambiguous markers do not activate it.
+
+All MeBasic-generated files and writes stay inside `mebasic-src/`: descriptions,
+screenshots, specification, skill, project configuration, tasks, conversations,
+analysis, correction memory and private history. Keep internal data in its hidden
+`.mebasic/` subfolder. Read implementation elsewhere as evidence but never modify,
+move or delete it as part of MeBasic generation or maintenance. Leave legacy
+root-level `.mebasic/` files untouched; do not migrate or delete them on open.
+Ordinary source edits requested by the user are separate from MeBasic maintenance.
+
 ## Folder Structure
 
 - The maintained specification is `mebasic.md` in https://github.com/mebrain/mebasic.
   The IDE keeps a separate checkout at `mebasic/mebasic.md`.
-  Whenever a project is loaded or restored, the IDE places its latest version
-  at `<project>/.mebasic/mebasic.md`.
+  Only after explicit opt-in, the IDE installs it at
+  `<project>/mebasic-src/.mebasic/mebasic.md`; the companion skill lives beside it
+  under `.mebasic/skills/mebasic/SKILL.md` inside `mebasic-src/`.
 - MeBasic Markdown descriptions live in `<project>/mebasic-src/`; these are the files
   the user primarily reads. Preserve implementation files in their existing
   locations; generating MeBasic never authorises moving or rewriting them.
@@ -125,13 +150,13 @@ Choose short headings that answer these questions:
 
 ## Generating a missing interpretation
 
-The IDE offers Generate MeBasic above the MeBasic sidebar when a loaded project
-has no `mebasic-src/`. The selected local assistant uses the companion skill to
-delegate creation to a small, inexpensive agent. That worker reads the installed
-specification and actual project source before creating linked descriptions and
-the screenshots folder. Preserve an existing interpretation and all implementation
-files; generation is not permission to overwrite, move or rewrite source code.
-Explain generation failures and missing screenshots instead of fabricating content.
+The IDE offers Generate MeBasic with the left-side warning for an unregistered
+project. Confirmation is required before any project writes. The IDE creates the
+configuration and installs language resources inside `mebasic-src/`, then delegates
+creation to a small, inexpensive agent. The worker reads actual source, preserves
+existing descriptions and writes only inside this directory. Report failures and
+missing screenshots instead of fabricating content; a failed generation remains
+pending and must not silently enable automatic maintenance.
 
 ## Accuracy
 
@@ -141,8 +166,9 @@ formatting, internal refactors and other trivial changes when existing descripti
 remain accurate. Changes to behaviour, concepts, responsibilities, relationships,
 user terminology or constraints require updates to the affected descriptions and
 links only. Judge meaning, not diff size; a one-line behaviour change can matter.
-Create an initial interpretation when explicitly requested or when substantive
-project work needs one. Never regenerate an existing tree wholesale.
+Generate an initial interpretation only after explicit user approval. Automatic
+maintenance requires a valid, ready project configuration. Never regenerate an
+existing tree wholesale.
 The companion [MeBasic skill](skills/mebasic/SKILL.md) governs this decision and
 delegation to a separate small, inexpensive agent; model selection is configurable
 and must not be hardcoded in the IDE.
@@ -176,9 +202,9 @@ or uncertain explanations instead of presenting guesses as facts.
   `mebasic-src/constraints/`, including their origin, scope and affected descriptions.
   Merge related rules without losing earlier context; explicitly mark superseded
   instructions. Keep requested rules distinguishable from verified enforcement.
-- Keep an internal change record in `.mebasic/change-history.jsonl` and a latest
-  baseline index in `.mebasic/change-state.json`. Retain exact baseline content
-  under `.mebasic/baselines/`. Record UTC time, actor (`user`, `llm` or `unknown`),
+- Keep an internal change record in `mebasic-src/.mebasic/change-history.jsonl` and a latest
+  baseline index in `mebasic-src/.mebasic/change-state.json`. Retain exact baseline content
+  under `mebasic-src/.mebasic/baselines/`. Record UTC time, actor (`user`, `llm` or `unknown`),
   evidence of authorship, paths and renames, before/after hashes, what changed,
   why, propagated descriptions, constraint updates and unresolved conflicts.
   Observe external edits before adding your own entry; do not attribute all
