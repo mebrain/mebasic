@@ -152,8 +152,14 @@ Choose short headings that answer these questions:
 The IDE offers Generate MeBasic below the warning in its Code column for an unregistered
 project. Confirmation is required before any project writes. The IDE creates the
 configuration and installs language resources inside `mebasic-src/`, then delegates
-creation to a small, inexpensive agent. The worker reads actual source, preserves
-existing descriptions and writes only inside this directory. Report failures and
+creation to a capable agent using the skill-configured model and reasoning effort. The worker reads actual source, preserves
+existing descriptions and writes only inside this directory. It surveys the
+description kinds above and creates source-backed pages for each applicable kind,
+including useful flows and concepts beyond modules.
+It records covered files or a reason a kind does not apply in private
+`.mebasic/generation-coverage.json`; the IDE checks that all kinds were assessed and listed files exist before marking
+generation ready. A modules-only result is insufficient when other kinds apply. Create `screenshots/` even if no verified captures
+are available. Report failures and
 missing screenshots instead of fabricating content; a failed generation remains
 pending and must not silently enable automatic maintenance.
 
@@ -169,7 +175,7 @@ Generate an initial interpretation only after explicit user approval. Automatic
 maintenance requires a valid, ready project configuration. Never regenerate an
 existing tree wholesale.
 The companion [MeBasic skill](skills/mebasic/SKILL.md) governs this decision and
-delegation to a separate small, inexpensive agent; model selection is configurable
+delegation to a separate capable agent using the configured reasoning effort; model selection is configurable
 and must not be hardcoded in the IDE.
 Distinguish observed behaviour from inference, intended behaviour and missing
 implementation. Update affected descriptions when source changes; flag stale
