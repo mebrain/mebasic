@@ -22,7 +22,8 @@ After coding in an opted-in project, compare this task's changes with the existi
 - Update when behaviour, concepts, relationships, terminology or constraints
   change. Identify the affected implementation and descriptions, including links.
 - Generate an initial interpretation only for an explicitly approved request.
-  Preserve existing user descriptions.
+  Preserve existing user descriptions. For approved generation, listed paths are
+  starting points, not limits: choose useful descriptions throughout `mebasic-src/`.
 
 Delegate needed work to a separate agent after coding finishes; pass the reason,
 affected paths and accepted user instructions. Use the IDE's supplied handoff
