@@ -173,7 +173,8 @@ user terminology or constraints require updates to the affected descriptions and
 links only. Judge meaning, not diff size; a one-line behaviour change can matter.
 Generate an initial interpretation only after explicit user approval. Automatic
 maintenance requires a valid, ready project configuration. Never regenerate an
-existing tree wholesale.
+existing tree wholesale automatically. A user may explicitly confirm regeneration
+to refresh the whole interpretation from current source while preserving user edits.
 The companion [MeBasic skill](skills/mebasic/SKILL.md) governs this decision and
 delegation to a separate capable agent using the configured reasoning effort; model selection is configurable
 and must not be hardcoded in the IDE.

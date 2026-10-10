@@ -44,4 +44,6 @@ in `.mebasic/generation-coverage.json`, and create `screenshots/` inside the
 directory. The IDE owns the
 project configuration; do not remove it or create competing marker files.
 Use only real screenshots. Report changes, checks and unresolved conflicts.
-Do not delegate again from the worker or regenerate unrelated descriptions.
+Do not delegate again from the worker. Automatic maintenance must not regenerate
+unrelated descriptions; explicitly confirmed regeneration may refresh the whole
+interpretation while preserving user edits.
