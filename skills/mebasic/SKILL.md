@@ -34,8 +34,16 @@ default for Codex). If no model override is set, choose a model with capability
 comparable to GPT-6.1 Sol from the current catalog, not the cheapest small model;
 if no suitable model is identifiable or available, report the pending update.
 
-The worker reads the specification, actual source and relevant existing
-constraints; edits only affected `mebasic-src/` descriptions and links; preserves
+Before writing, the worker reads project-root `AGENTS.md` (or `agents.md`),
+applicable nested instructions and referenced guidance, then the current specification,
+actual source, relevant tests and constraints. Understand purpose, architecture,
+relationships and user journeys deeply; filenames alone are not evidence.
+Read `context/project-context.md` inside `mebasic-src/` if present. Before finishing,
+create or update this concise, source-grounded understanding with decisions,
+project-relative evidence paths, unresolved questions and remaining work. Refresh
+stale facts against current files and corrections; preserve user edits. This file
+carries context across fresh workers, IDE restarts and project moves. Keep secrets
+and conversation transcripts out of it. The worker edits only affected `mebasic-src/` descriptions and links; preserves
 user edits and implementation locations; and maintains private history and
 baselines under `mebasic-src/.mebasic/`. Every MeBasic write stays inside
 `mebasic-src/`; source elsewhere is read-only evidence. Initial generation must inspect actual source and

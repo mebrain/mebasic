@@ -147,6 +147,38 @@ Choose short headings that answer these questions:
   Explain the visible result and link the relevant flow, without enumerating
   individual handler functions. Events can come from users or the system.
 
+## Understand the project before generating
+
+Before generating or regenerating MeBasic files, read the project's `AGENTS.md`
+(or `agents.md`), applicable nested instructions, and the guidance they reference.
+If no such file exists, study the project's own documentation and source directly.
+Develop a deep understanding of the project's purpose, architecture, major
+responsibilities, relationships, user journeys and actual behaviour. Read relevant
+implementation and tests; names and folder listings alone are not enough.
+Distinguish intended behaviour from implemented behaviour and unresolved questions.
+
+### Portable project context
+
+Keep reusable understanding in `mebasic-src/context/project-context.md`. Before
+initial generation, regeneration or maintenance, read this file if it exists.
+If it is absent, build the understanding from project guidance and actual source,
+then create it. Update it before finishing each generation or meaningful maintenance
+run so a fresh worker can continue after an IDE restart or project move.
+
+Use concise prose to capture project purpose, architecture, important concepts and
+relationships, accepted decisions and terminology, relevant source locations,
+existing interpretation, unresolved questions and remaining work. Include evidence
+and distinguish observed behaviour from intention. Use project-relative paths so
+it remains portable. This is a working summary, not a transcript or a rigid schema;
+do not copy credentials or unrelated private content into it.
+
+The context supplements `AGENTS.md`, the current specification and actual source.
+Read the instructions first, then check remembered understanding against current
+files and corrections; update stale facts rather than carrying them forward.
+Preserve user edits and record disagreements instead of overwriting them silently.
+All context writes stay inside `mebasic-src/context/`. The IDE can use a fresh worker
+for every call because continuity lives with the project, not in a provider session.
+
 ## Generating a missing interpretation
 
 The IDE offers Generate MeBasic below the warning in its Code column for an unregistered
