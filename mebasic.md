@@ -1,0 +1,206 @@
+---
+title: mebasic
+summary: An AI-native, plain-text interpretation of source code that helps users understand their project.
+description: >
+  mebasic explains a project and its source code in plain words, independent
+  of the implementation language. It helps users understand the program;
+  it does not define how the program runs. This file
+  defines the language. It is edited only by the architect, or with the
+  architect's approval; an LLM never changes it on its own.
+---
+# mebasic
+
+## Purpose
+
+MeBasic is the user-facing interpretation of complex source code. This IDE
+helps users explore that interpretation without needing to know the underlying
+language. The specification is a flexible guideline, not a strict grammar.
+Use the structure where it helps understanding; omit unnecessary detail.
+
+Start with what the project does, who uses it, and its main concepts. Explain
+purpose and useful behaviour first, then let links lead to deeper detail.
+MeBasic operates above the function level: describe concepts, responsibilities,
+relationships and journeys, without a function-by-function inventory or call
+signatures. Source details remain available as supporting evidence.
+
+## Folder Structure
+
+- The maintained specification is `mebasic.md` in https://github.com/mebrain/mebasic.
+  The IDE keeps a separate checkout at `mebasic/mebasic.md`.
+  Whenever a project is loaded or restored, the IDE places its latest version
+  at `<project>/.mebasic/mebasic.md`.
+- MeBasic Markdown descriptions live in `<project>/src/`; these are the files
+  the user primarily reads. Implementation code moves to `<project>/inner-src/`,
+  available when the user wants to inspect the underlying source. For example,
+  `src/modules/project_mod.md` explains the project and
+  `src/objects/document_obj.md` explains a document, with supporting code paths
+  pointing into `inner-src/`.
+- One folder per primitive, as the toolbox below names it. A folder may hold
+  subfolders that group its files.
+- One file per thing described, named in lowercase letters and digits, then
+  its primitive's suffix: `_mod.md`, `_obj.md`, `_flow.md`, `_alg.md`,
+  `_con.md`, `_ui.md`, `_store.md`, `_widget.md` or `_event.md`, respectively,
+  in toolbox order.
+- Statements are bullets inside modules, not separate files or folders.
+- No README or index files: each file is its own read-me.
+- `modules/project_mod.md` is the starting point: purpose, users, main concepts
+  and major parts, with links into the project.
+
+## File Format
+
+Description files normally follow this order:
+
+1. **Front matter**, between `---` lines:
+   - `title`: the name of what it describes.
+   - `summary`: one sentence, at most 160 characters.
+   - `description: >` then indented lines: a few sentences in plain words.
+2. **`# Title`**: the one heading of that level, the same as `title`.
+3. **The body**, as its primitive gives it below.
+4. **Bottom matter**, between `---` lines at the very end: `code:`, then
+   an indented YAML list of paths naming supporting code from the repository
+   root. Use `code: []` when there is no implementation evidence yet.
+
+Links are relative paths to `.md` files and must lead to a file that exists.
+Link related descriptions where they help readers follow ownership, use,
+dependencies or data movement. The specification's `toolbox` maps primitives
+to folders; description files do not need it.
+
+### Module
+
+1. **`## Inputs`**: the meaningful things it receives. Each bullet starts
+   with the input in bold, then what it is, where it comes from, and what
+   responsibility handles it.
+2. **`## Processing`**: first the rules it keeps, in a short paragraph; then
+   one or more processing groups, each a `### Group` followed by its
+   statements.
+3. **`## Output`**: its meaningful results, each bullet starting
+   with the output in bold. Notes, such as known breaches, follow as
+   `###` headings.
+
+### Object
+
+- **`## Attributes`**: a list of what it holds. Each bullet starts with the
+  attribute in bold, then what it is.
+- Explain what the object represents and why it exists in its description.
+  **`## Behaviour`** explains its useful operations and the rules it preserves;
+  link the modules that use it and related objects where helpful.
+
+### Other descriptions
+
+Choose short headings that answer these questions:
+
+- **Flow**: what starts it, what information travels through which modules,
+  how it changes, and what useful result or failure ends it?
+- **Algorithm**: what problem does it solve, with what inputs, main steps,
+  result and limitations? Link the descriptions that use it.
+- **Constraint**: what rule applies, why, where does it come from, and what
+  happens when it cannot be met? Link the affected things.
+- **UI page**: what can the user understand or do here, what actions are
+  available, and what feedback or errors appear? Link the underlying work.
+- **Datastore**: what is kept, why, where, who reads or changes it, and how
+  long does it last? Explain relevant loss or recovery behaviour.
+- **Widget**: what meaningful part of a UI page is this, what does it show
+  or let the user do, and which events connect it to the program? Link its
+  containing page and the objects or modules involved.
+- **Event**: what occurrence triggers a response, where does it originate,
+  what information accompanies it, and which object or module responds?
+  Explain the visible result and link the relevant flow, without enumerating
+  individual handler functions. Events can come from users or the system.
+
+## Accuracy
+
+Ground explanations in actual source and keep supporting code paths current.
+Distinguish observed behaviour from inference, intended behaviour and missing
+implementation. Update affected descriptions when source changes; flag stale
+or uncertain explanations instead of presenting guesses as facts.
+
+## Guidance for the implementing LLM
+
+- Read the project-local specification, existing `src/` descriptions and
+  `src/constraints/` before working. Maintain the MeBasic interpretation of the
+  current project (including MeBrain when that is the project being described).
+  Work at the level of concepts and responsibilities, not individual functions.
+- Read the relevant `inner-src/` implementation before explaining it. After an
+  implementation change, update only the affected descriptions, relationships
+  and supporting paths. Keep user-facing names consistent across `src/`.
+- Never overwrite user changes in `src/`. Re-read each file immediately before
+  editing and compare it with the last recorded baseline. Preserve user wording,
+  names, additions and deletions; make small edits around them. If a change
+  conflicts with the user's text, leave that text intact, record the conflict
+  and ask for a resolution. Missing history means unknown authorship, not
+  permission to regenerate a file. Never replace the whole tree from a template.
+- Carry user renames, terminology changes and changed concepts into all affected
+  `src/` descriptions and links, whether the change came from an edited file,
+  implementation change or conversation. Do not silently restore an old name.
+  Preserve a requested behaviour as intent if the implementation does not yet
+  match it, and explain the discrepancy. A description edit alone is not proof
+  that the implementation changed or permission for unrelated code changes.
+- Record the user's project instructions and corrections in relevant files under
+  `src/constraints/`, including their origin, scope and affected descriptions.
+  Merge related rules without losing earlier context; explicitly mark superseded
+  instructions. Keep requested rules distinguishable from verified enforcement.
+- Keep an internal change record in `.mebasic/change-history.jsonl` and a latest
+  baseline index in `.mebasic/change-state.json`. Retain exact baseline content
+  under `.mebasic/baselines/`. Record UTC time, actor (`user`, `llm` or `unknown`),
+  evidence of authorship, paths and renames, before/after hashes, what changed,
+  why, propagated descriptions, constraint updates and unresolved conflicts.
+  Observe external edits before adding your own entry; do not attribute all
+  uncommitted edits to yourself or assume every external edit was the user.
+  Append history, preserve existing records, and advance baselines only after
+  re-reading the saved result. If files change during reconciliation, stop that
+  write and preserve both versions for review. This record supports careful LLM
+  maintenance; it does not imply automatic runtime tracking by the IDE.
+
+## Primitives
+
+- **Module**: a group of related work, like an endpoint group such as auth:
+  its inputs, its processing as groups of statements, and its outputs.
+- **Statement**: a single explanation of what happens inside a module, as
+  one bullet: what comes in, what is done, what goes out, and a link to the
+  algorithm it uses, when it uses one.
+- **Object**: a concrete, encapsulated thing, like a class; its file
+  describes its meaning, attributes and behaviour.
+- **Flow**: a path data takes across modules, from what starts it to what it
+  ends in.
+- **Algorithm**: a reusable procedure that modules and flows use.
+- **Constraint**: a group of rules: what must never happen, what happens
+  instead, and where each rule comes from.
+- **UI page**: a surface a person uses: a window, a panel, a command line,
+  an API.
+- **Datastore**: where data is kept: what is stored, how it is written and
+  read, and how long it lasts.
+- **Widget**: a meaningful UI element, such as a button, field or list,
+  described through its purpose and interaction with the program.
+- **Event**: an occurrence, such as a click, file change or completed task,
+  that causes an object or module to respond.
+
+## Organisation
+
+Explain concepts as Objects and related work as Modules with clear
+responsibilities. Describe encapsulation and relationships as they exist in the
+source; this interpretation does not require rewriting the implementation.
+
+## Example
+
+In a text editor, `modules/project_mod.md` explains that users open, edit and
+save documents, and links to `objects/document_obj.md` and `flow/save_flow.md`.
+The Document description explains its text, unsaved changes and editing
+behaviour. The Save flow follows the user's Save action through the file module
+to disk, linking `constraints/externalchange_con.md` to explain why a conflicting
+disk edit prevents saving. A Save Widget links its UI page to a Save-requested
+Event, which leads to that flow. These example files are illustrative, not required
+project concepts; create them before using actual Markdown links.
+
+---
+toolbox:
+  - module: modules
+  - object: objects
+  - flow: flow
+  - algorithm: algorithms
+  - constraint: constraints
+  - uipage: ui
+  - datastore: datastores
+  - widget: widgets
+  - event: events
+code: []
+---
