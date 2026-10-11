@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 7
+  revision: 8
   updated: "2026-10-11"
-  summary: "Revise existing interpretations from current evidence; recover architect decisions as Architect Said and Disallowed."
+  summary: "Preserve portable human-edit blocks; distinguish continuation and rebuild with or without human text."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -439,6 +439,32 @@ to refresh the whole interpretation from current source while preserving user ed
 Alternatively, the user may explicitly choose a fresh regeneration that discards
 existing descriptions and edits, screenshots, portable context, restructuring notes
 and generation history. Explain that deletion before asking the user to choose.
+Human authorship travels with the Markdown file. Enclose human-authored or
+human-edited blocks with these markers, on their own lines:
+
+```markdown
+<!-- mebasic:author=human -->
+Text the human wrote or explicitly edited.
+<!-- /mebasic:author -->
+```
+
+Within YAML front matter, use YAML comments `# mebasic:author=human` and
+`# /mebasic:author` around complete fields instead, so the metadata remains valid.
+Markers identify a human-edited block, not a claim that every word originated with
+that person. Do not nest markers or put them inside code fences. Never invent human
+attribution for generated text. Existing unmarked text has unknown authorship;
+loading a file does not make it human-authored. A human may mark existing text to
+protect it. Editors should visually distinguish marked blocks and record manual
+edits at block boundaries. AI edits and disk reloads must not acquire human markers.
+
+Regeneration has three explicit choices: continue in place; rebuild generated
+content while retaining marked human blocks at their original file paths; or
+rebuild including deletion of human blocks. The last choice requires explicit
+human selection. Rebuild with preservation leaves fragments for the agent to
+complete into valid descriptions; preserve their exact wording and attribution.
+Screenshots and generated history/context may be regenerated. Ask about conflicts
+with retained human instructions rather than silently rewriting them.
+
 Ordinary regeneration continues from the existing files and unfinished work.
 Adapt and edit the interpretation in place, adding missing descriptions and
 repairing links as understanding improves. This continuity does not certify the
@@ -615,6 +641,7 @@ silently substitute another kickoff prompt. If it is missing or unreadable, repo
 the problem before starting generation. The prompt assumes the agent's working
 directory is `mebasic-src/`, with read access to the parent project and write access
 limited to `mebasic-src/`. Editors establish that context before submitting it.
+`human_generation_prompt` starts a rebuild around retained human blocks.
 `fresh_generation_prompt` is the corresponding kickoff message when the user
 explicitly chooses to discard the existing interpretation and start fresh. Read
 and check the selected prompt before clearing any files. Both choices use the
@@ -678,6 +705,27 @@ ide_settings:
     baselines, must stay in this directory. Do not change implementation files.
     The editor owns the project configuration file with the .mebasic extension;
     never remove it or create another one.
+  human_generation_prompt: |-
+    The user approved rebuilding generated MeBasic content while preserving human
+    text. Generate the interpretation yourself with the current user-selected agent,
+    model and reasoning settings; do not delegate or create a handoff.
+    Your working directory is mebasic-src; the project root is one directory above.
+    Read project-root AGENTS.md (or agents.md), applicable nested guidance and
+    referenced documents. Read .mebasic/mebasic.md and deeply understand the actual
+    project architecture and source. Read retained context if any; re-verify it.
+    Files now contain retained human fragments. Keep all marked human blocks and
+    their exact wording at their original paths; fill in the generated content around
+    them. Never infer human authorship from old LLM text or mark your output human.
+    Follow the specification's collection hierarchy and explain every applicable
+    collection from current source. Rebuild context/project-context.md and history.
+    Recover architect decisions from this project's docs, architecture, AGENTS.md,
+    source/comments and referenced records, checking attribution and supersession.
+    Constraints describe only this project, never generation instructions, MeBasic
+    rules, skills or another project's decisions. Ask about conflicting human text.
+    Do not restore deliberately discarded AI text from earlier conversation.
+    Review omissions and report unfinished work. Use only real screenshots.
+    All writes stay in mebasic-src; implementation files remain untouched. The
+    editor owns the root .mebasic configuration: never remove or duplicate it.
   hidden_folders:
     - context
     - .mebasic

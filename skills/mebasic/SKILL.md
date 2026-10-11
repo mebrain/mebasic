@@ -39,3 +39,9 @@ links after moves, and maintain private history and baselines under `.mebasic/`.
 Record proposed restructuring in `.mebrain/restructuring.md` within `mebasic-src/`.
 Use only real screenshots. The IDE owns the project configuration; do not remove
 it or create competing markers. Report what changed, checks and unresolved work.
+
+Preserve portable human-edit blocks (`<!-- mebasic:author=human -->` through
+`<!-- /mebasic:author -->`; YAML front matter uses equivalent `#` comments).
+Never assign these markers to AI output. Continue edits in place unless the user
+chooses rebuilding. Rebuild retains human blocks unless deletion of human text
+was explicitly selected. Resolve conflicts with human text by asking the architect.

@@ -56,3 +56,9 @@ summary, then a heading and the numbered list.
 Re-read before saving to preserve concurrent edits. All writes stay in `mebasic-src/`.
 Briefly report meaningful additions or unresolved questions; do not imply that a
 recorded prohibition has already been enforced in code.
+
+Preserve portable human-edit blocks (`<!-- mebasic:author=human -->` through
+`<!-- /mebasic:author -->`; YAML front matter uses equivalent `#` comments).
+Never assign these markers to AI output. Continue edits in place unless the user
+chooses rebuilding. Rebuild retains human blocks unless deletion of human text
+was explicitly selected. Resolve conflicts with human text by asking the architect.
