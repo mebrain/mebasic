@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 5
+  revision: 6
   updated: "2026-10-11"
-  summary: "Define numbered architect statements and rulings with chat-driven constraints upkeep."
+  summary: "Keep architect constraints specific to the described project; exclude generation and tool instructions."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -169,7 +169,7 @@ After the shared opening, present:
 
 - **Example:** one concrete instance or situation that makes the object tangible.
 - **Attributes:** what it holds, explaining each attribute's meaning rather than
-  just its type. For example, "Health — how much damage the player can still
+  just its type. For example, "Health â€” how much damage the player can still
   withstand."
 - **Behaviour:** the useful things it can do and how they affect its state.
 - **Ownership and lifecycle:** who creates or owns it, what it owns, and when it
@@ -281,6 +281,21 @@ After the shared opening, present:
 Constraints preserve what the architect has explicitly said and the limits that
 follow from it. They guide both the project and the AI building it. They are not
 an AI-generated catalogue of best practices or rules guessed from existing code.
+Record only decisions about the project being described: its purpose, behaviour,
+architecture, or architect-defined limits on implementing and maintaining it.
+Identify that project before collecting statements. A message supplied by an IDE
+is not automatically an architect statement: distinguish the architect's decisions
+from instructions that merely operate the authoring tools. Generation requests,
+MeBasic language/format rules, skills, model selection, agent permissions and
+one-turn workflow instructions are not project constraints. Follow them while
+working, but do not copy them into either list or derive rulings from them.
+Rules from another project apply only when the architect explicitly adopts them
+for this project. Project-specific decisions in its own instructions and decision
+records may qualify; their provenance and relevance must both be clear. If either
+is unclear, ask instead of creating a binding rule. For example, a decision that
+the application must store data locally belongs here; an instruction to generate
+its MeBasic descriptions with the selected model does not.
+
 Use exactly two files in `mebasic-src/constraints/`:
 
 - **`statements.md`:** significant things the architect has told us about this
@@ -596,6 +611,9 @@ ide_settings:
     Preserve existing descriptions and user edits. Follow the current specification's
     required collection hierarchy and use actual source to decide useful descriptions
     within each category. Fill each collection with its own content as specified.
+    Populate constraints only from architect decisions about this project. Do not
+    record this generation prompt, MeBasic rules, skills or tool/agent instructions
+    as project statements or rulings, or import decisions from another project.
     Review the interpretation for omissions and report unfinished work.
     Use only real screenshots. All MeBasic writes, including private history and
     baselines, must stay in this directory. Do not change implementation files.
@@ -616,6 +634,9 @@ ide_settings:
     Follow the current specification's
     required collection hierarchy and use actual source to decide useful descriptions
     within each category. Fill each collection with its own content as specified.
+    Populate constraints only from architect decisions about this project. Do not
+    record this generation prompt, MeBasic rules, skills or tool/agent instructions
+    as project statements or rulings, or import decisions from another project.
     Review the interpretation for omissions and report unfinished work.
     Use only real screenshots. All MeBasic writes, including private history and
     baselines, must stay in this directory. Do not change implementation files.

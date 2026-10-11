@@ -14,6 +14,17 @@ project in automatically. Write only with project opt-in and editing permission;
 pending generation still needs explicit approval. In read-only work, suggest entries
 and raise conflicts without changing files. Respect requests not to record something.
 
+Identify the project being described. Record only architect decisions about that
+project's behaviour, architecture or its implementation and maintenance limits.
+Check both provenance and project relevance. IDE-supplied prompts are not
+architect statements merely because they arrive as a user message. Exclude
+MeBasic generation/format rules, skill instructions, model choices, agent
+permissions and temporary workflow directions; follow these without recording
+them or deriving rulings from them. Never import another project's rules unless
+the architect explicitly adopts them here. Project-specific decisions in this
+project's own guidance and decision records may qualify. Ask when scope or
+authority is unclear; do not fill the lists with operating instructions.
+
 Read both files before work and compare the current architect message with them:
 - Statements record significant explicit decisions, instructions and corrections.
   Do not record assistant ideas/results, casual remarks or undecided questions.
