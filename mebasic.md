@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 9
+  revision: 10
   updated: "2026-10-11"
-  summary: "Track precise human text ranges without attributing surrounding generated content."
+  summary: "Identify core application entry points and encapsulated submodules using their code names."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -105,6 +105,28 @@ Think of a module description as a microservice or API specification: it explain
 what a coherent part of the application offers to its callers and what they can
 rely on. Modules organise controller responsibilities around meaningful capabilities,
 with a clear boundary, purpose and public contract.
+
+Start by identifying the core application's entry point: the boundary where an
+outside caller engages its central capability and gets a result or effect back.
+Describe that entry point as the first substantive module, using its actual name
+in the code. Trace past process startup, GUI windows and UI event handlers to the
+core heart of the application; a UI class or `main` function is not automatically
+the module that owns the capability.
+
+If the core has multiple independently callable entry points, keep them as separate
+modules. Retain recognisable code names rather than replacing them with broad,
+invented summaries. For example, if `Map` and `OutputMap` are distinct core entry
+points in the source, describe **Map** and **OutputMap** separately and explain
+what each accepts, does and returns. These names are examples, not requirements
+for projects that do not contain them.
+
+For each entry point, identify and link the submodules that carry out its work.
+Give each encapsulated submodule with a distinct responsibility its own module
+file, preserving its code name and linking it back to the entry points that use
+it. Follow meaningful boundaries, not every helper function or trivial structure.
+Ground both the entry points and this decomposition in actual source and callers.
+The project overview is an orientation page; it does not replace the first core
+entry-point module or merge independent entry points into a generic controller.
 
 Find these boundaries by deeply understanding the project. Group capabilities
 that belong together through responsibility, ownership and rules. A module may
