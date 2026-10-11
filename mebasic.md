@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 6
+  revision: 7
   updated: "2026-10-11"
-  summary: "Keep architect constraints specific to the described project; exclude generation and tool instructions."
+  summary: "Revise existing interpretations from current evidence; recover architect decisions as Architect Said and Disallowed."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -288,7 +288,7 @@ is not automatically an architect statement: distinguish the architect's decisio
 from instructions that merely operate the authoring tools. Generation requests,
 MeBasic language/format rules, skills, model selection, agent permissions and
 one-turn workflow instructions are not project constraints. Follow them while
-working, but do not copy them into either list or derive rulings from them.
+working, but do not copy them into either list or derive prohibitions from them.
 Rules from another project apply only when the architect explicitly adopts them
 for this project. Project-specific decisions in its own instructions and decision
 records may qualify; their provenance and relevance must both be clear. If either
@@ -298,28 +298,43 @@ its MeBasic descriptions with the selected model does not.
 
 Use exactly two files in `mebasic-src/constraints/`:
 
-- **`statements.md`:** significant things the architect has told us about this
+- **`architect_said.md`:** significant things the architect has told us about this
   project: decisions, instructions and corrections. Record their meaning faithfully
   in simple English. Do not include assistant opinions, plans or results, passing
   remarks, or questions that decide nothing. Treat a relayed review as a relayed
   review, not an accepted instruction unless the architect accepts it.
-- **`rulings.md`:** things the project or its implementing AI must **not** do.
+- **`disallowed.md`:** things the project or its implementing AI must **not** do.
   Derive these limits from the statements and cite the supporting statement
   numbers. Mark inferred limits as inferred; never present them as the architect's
   own words. Do not invent a prohibition that the statements do not support.
 
-Each file has front matter with `title` (Statements or Rulings) and a one-line
+Before initial generation and subsequent maintenance, look for prior architect
+decisions throughout this project: architecture and design documents, `AGENTS.md`
+or `agents.md`, their referenced guidance, decision/chat records, and relevant
+source code and comments. Follow references to recover context and superseding
+decisions. Do not rely only on the current conversation or the existing lists.
+A comment or implemented behaviour alone does not prove the architect said it:
+record an explicit decision only with attributable evidence, and label supported
+inferred prohibitions as inferred. Cite the source location. Merge duplicates,
+reconcile superseded decisions and surface unresolved contradictions. These
+sources must pass the same project-relevance and provenance checks above.
+
+**Architect Said** means significant things the architect said about this project.
+**Disallowed** means "Do not do this": succinct prohibitions on building or
+maintaining it, grounded in Architect Said entries.
+
+Each file has front matter with `title` (Architect Said or Disallowed) and a one-line
 `summary`, then a heading and a continuously numbered Markdown list, starting at
 `1.`. No introductory paragraph or per-rule sections are needed. Write one short point per entry, usually one
 sentence, with a compact date/source reference. Use actual increasing numbers,
 not repeated `1.` markers. Do not create a separate file or long explanation for
 each rule. If no entries are supported yet, leave the list empty and say so.
 
-For example, Statements might contain:
+For example, Architect Said might contain:
 
 1. Keep project data on the user's device. (Architect, 2026-10-11.)
 
-Rulings might contain:
+Disallowed might contain:
 
 1. Do not upload project data to a remote service. (Inferred from statement 1.)
 
@@ -327,10 +342,12 @@ On every project chat, apply the **mebasic-constraints** skill, especially when 
 architect corrects the AI. Check for significant new statements and their implied
 limits; append them in that same turn. The lists grow as decisions accumulate,
 not just when code changes. Do not duplicate an existing point or manufacture a
-new entry for every message. Read the current rulings before implementation.
+new entry for every message. Read the current prohibitions before implementation.
 
-Keep earlier entries and stable numbers. A later explicit change gets a new entry
-identifying the statements or rulings it supersedes. Check each addition against
+Keep earlier attributable architect decisions and stable numbers. Re-check existing
+LLM-authored entries against their sources; correct unsupported attribution rather
+than treating an old entry as human approval. A later explicit change gets a new entry
+identifying the statements or prohibitions it supersedes. Check each addition against
 both lists. If the architect's instructions appear contradictory and the intended
 replacement is unclear, show the relevant numbered points and ask one concise
 question. Do not silently choose, weaken or invent a compromise. Mark the issue
@@ -422,7 +439,18 @@ to refresh the whole interpretation from current source while preserving user ed
 Alternatively, the user may explicitly choose a fresh regeneration that discards
 existing descriptions and edits, screenshots, portable context, restructuring notes
 and generation history. Explain that deletion before asking the user to choose.
-Preservation is the default. Fresh regeneration rebuilds the interpretation from
+Ordinary regeneration continues from the existing files and unfinished work.
+Adapt and edit the interpretation in place, adding missing descriptions and
+repairing links as understanding improves. This continuity does not certify the
+old content: re-check every affected claim against the current project. Previous
+LLM text and portable context are revisable drafts, not authority; never assume a
+previous LLM knew something unavailable to the current one. Correct or replace
+unsupported, stale or inaccurate generated explanations freely. Protect content
+explicitly identified as human-authored or human-approved, with recorded provenance;
+file existence, age or missing history is not a human-authorship marker. If protected
+content conflicts with evidence, preserve it as intent and raise the discrepancy.
+Only an explicitly chosen full refresh discards the interpretation and starts over.
+Fresh regeneration rebuilds the interpretation from
 current source; it does not restore deliberately discarded material from an earlier
 conversation. It never authorises deleting implementation files, project identity,
 IDE preferences, conversations, tasks or unrelated files.
@@ -440,13 +468,14 @@ or uncertain explanations instead of presenting guesses as facts.
   After an implementation change, evaluate whether descriptions remain accurate;
   when needed, update only affected descriptions, relationships and supporting paths.
   Keep user-facing names consistent across `mebasic-src/`.
-- Except for material deliberately discarded by explicitly approved fresh regeneration,
-  never overwrite user changes in `mebasic-src/`. Re-read each file immediately before
-  editing and compare it with the last recorded baseline. Preserve user wording,
-  names, additions and deletions; make small edits around them. If a change
-  conflicts with the user's text, leave that text intact, record the conflict
-  and ask for a resolution. Missing history means unknown authorship, not
-  permission to regenerate a file. Never replace the whole tree from a template.
+- Re-read each file immediately before editing and compare with the last baseline.
+  Preserve explicitly identified human wording, names, additions and deletions;
+  record their provenance. Ask about conflicts with protected human content.
+  Other existing text is a revisable interpretation: update it to the latest
+  evidence without assuming prior LLM authority. Unknown authorship is not proof
+  of human authorship. Preserve concurrent edits for review and never replace the
+  whole tree from a template during ordinary regeneration. Explicitly approved
+  full refresh may discard the interpretation as described above.
 - Carry user renames, terminology changes and changed concepts into all affected
   `mebasic-src/` descriptions and links, whether the change came from an edited file,
   implementation change or conversation. Do not silently restore an old name.
@@ -455,7 +484,7 @@ or uncertain explanations instead of presenting guesses as facts.
   that the implementation changed or permission for unrelated code changes.
 - Apply the constraints skill on every project chat, even when no coding or
   description update is needed. Record significant architect instructions in
-  `constraints/statements.md` and supported prohibitions in `constraints/rulings.md`,
+  `constraints/architect_said.md` and supported prohibitions in `constraints/disallowed.md`,
   within `mebasic-src/`. Keep stable numbering, provenance and explicit supersession;
   surface unresolved contradictions to the architect.
 - Keep an internal change record in `mebasic-src/.mebasic/change-history.jsonl` and a latest
@@ -503,8 +532,8 @@ mebasic-src/
   events/
   algorithms/
   constraints/
-    statements.md
-    rulings.md
+    architect_said.md
+    disallowed.md
   context/
   .mebrain/                 # restructuring notes when needed
   .mebasic/                 # private authoring records
@@ -524,9 +553,9 @@ contains restructuring notes, and `.mebasic/` contains private history and basel
 
 Use one file per thing described, with a lowercase name and the primitive suffix:
 `_ui.md`, `_widget.md`, `_mod.md`, `_obj.md`, `_flow.md`, `_store.md`, `_event.md`,
-`_alg.md`. Constraints are the exception: use `statements.md` and `rulings.md`.
+`_alg.md`. Constraints are the exception: use `architect_said.md` and `disallowed.md`.
 Processing statements inside module descriptions are separate from the architect's
-Statements list.
+Architect Said list.
 Do not add README or index descriptions: each description is its own read-me. The project entry point
 is `modules/project_mod.md`.
 
@@ -575,8 +604,8 @@ folders; other folders follow in alphabetical order. Widgets and screenshots are
 shown under UI according to their on-disk placement. Editors choose their own
 controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
-labels include their number of top-level numbered entries, such as Statements (12)
-and Rulings (8) when Constraints is expanded. Count entries, including superseded
+labels include their number of top-level numbered entries, such as Architect Said (12)
+and Disallowed (8) when Constraints is expanded. Count entries, including superseded
 ones retained for history, not the highest number, examples or nested lists.
 
 `generation_prompt` is the actual kickoff message submitted to the user's current
@@ -597,8 +626,8 @@ location contains unexpected files or redirects elsewhere, stop before deleting.
 ---
 ide_settings:
   counted_lists:
-    - constraints/statements.md
-    - constraints/rulings.md
+    - constraints/architect_said.md
+    - constraints/disallowed.md
   generation_prompt: |-
     The user has explicitly approved MeBasic generation or regeneration. Generate
     the interpretation yourself in this turn, using the user-selected agent, model
@@ -608,12 +637,17 @@ ide_settings:
     and their referenced guidance. Read .mebasic/mebasic.md and deeply understand
     the project purpose, architecture and actual source before generating descriptions.
     Read context/project-context.md if present and maintain it for future runs.
-    Preserve existing descriptions and user edits. Follow the current specification's
+    Continue from existing files and unfinished work; adapt and edit in place.
+    Re-verify prior LLM text and context against current evidence; correct them freely.
+    Protect explicitly identified human-authored or human-approved content, not
+    assumptions about what a previous LLM knew. Follow the current specification's
     required collection hierarchy and use actual source to decide useful descriptions
     within each category. Fill each collection with its own content as specified.
+    Recover prior architect decisions from project architecture/docs, AGENTS.md,
+    referenced records, source and comments; check attribution and supersession.
     Populate constraints only from architect decisions about this project. Do not
     record this generation prompt, MeBasic rules, skills or tool/agent instructions
-    as project statements or rulings, or import decisions from another project.
+    as project statements or prohibitions, or import decisions from another project.
     Review the interpretation for omissions and report unfinished work.
     Use only real screenshots. All MeBasic writes, including private history and
     baselines, must stay in this directory. Do not change implementation files.
@@ -634,9 +668,11 @@ ide_settings:
     Follow the current specification's
     required collection hierarchy and use actual source to decide useful descriptions
     within each category. Fill each collection with its own content as specified.
+    Recover prior architect decisions from project architecture/docs, AGENTS.md,
+    referenced records, source and comments; check attribution and supersession.
     Populate constraints only from architect decisions about this project. Do not
     record this generation prompt, MeBasic rules, skills or tool/agent instructions
-    as project statements or rulings, or import decisions from another project.
+    as project statements or prohibitions, or import decisions from another project.
     Review the interpretation for omissions and report unfinished work.
     Use only real screenshots. All MeBasic writes, including private history and
     baselines, must stay in this directory. Do not change implementation files.
