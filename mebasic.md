@@ -1,5 +1,9 @@
 ---
 title: mebasic
+version:
+  revision: 1
+  updated: "2026-10-11"
+  summary: "Introduce structured specification versioning."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -473,6 +477,19 @@ The title names the concept for readers; the filename and suffix identify the
 file and its primitive. Links between descriptions use relative paths to existing
 Markdown files. Link where it helps explain ownership, use, dependencies or data
 movement. Keep supporting evidence distinct from proposals.
+
+## Specification version
+
+This specification's front matter contains a structured `version` record:
+`revision` is a positive, monotonically increasing integer; `updated` is the
+revision date in YYYY-MM-DD form; `summary` briefly describes the change.
+When an author or AI makes an approved change to the specification, increment
+`revision`, set the date and update the summary in the same edit. Compare revisions
+numerically to identify newer specifications; do not use timestamps or file size
+as version precedence. Keep the revision unchanged when copying the specification.
+This versions the language document, independently of a project's configuration
+format. Version maintenance does not authorise an AI to revise the language
+without the architect's approval.
 
 ## IDE settings
 
