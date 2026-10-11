@@ -46,17 +46,15 @@ carries context across fresh workers, IDE restarts and project moves. Keep secre
 and conversation transcripts out of it. The worker edits only affected `mebasic-src/` descriptions and links; preserves
 user edits and implementation locations; and maintains private history and
 baselines under `mebasic-src/.mebasic/`. Every MeBasic write stays inside
-`mebasic-src/`; source elsewhere is read-only evidence. Initial generation must inspect actual source and
-create every exact top-level folder required by the current specification and fill
-each description category with its own content. Use `data/` for datastore descriptions. Folder names and placement are
-mandatory, not discretionary: never put other categories under modules. Use
-judgment for the explanations inside each category; document genuine inapplicability
-rather than inventing features. When changing organization, preserve content and user edits, repair links and
-context references, and record moves.
-Review content and top-level placement before completion; no machine-readable
-coverage report is required. Keep only real captures in screenshots. The IDE owns the
-project configuration; do not remove it or create competing marker files.
-Use only real screenshots. Report changes, checks and unresolved conflicts.
+`mebasic-src/`; source elsewhere is read-only evidence. Initial generation must inspect actual source,
+follow the specification's collection definitions and exact folder hierarchy,
+and fill each collection with its own content. Record proposed restructuring
+under `mebasic-src/.mebrain/restructuring.md`; generation does not authorise
+implementation changes. Preserve content and user edits when changing organisation,
+repair links and context references, and record moves. Review coverage and placement
+before completion, using only real screenshots. The IDE owns the project
+configuration; do not remove it or create competing marker files.
+Report changes, checks and unresolved conflicts.
 Do not delegate again from the worker. Automatic maintenance must not regenerate
 unrelated descriptions; explicitly confirmed regeneration may refresh the whole
 interpretation while preserving user edits.

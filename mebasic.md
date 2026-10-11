@@ -1,169 +1,167 @@
 ---
 title: mebasic
-summary: An AI-native, plain-text interpretation of source code that helps users understand their project.
+summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
-  mebasic explains a project and its source code in plain words, independent
-  of the implementation language. It helps users understand the program;
-  it does not define how the program runs. This file
-  defines the language. It is edited only by the architect, or with the
-  architect's approval; an LLM never changes it on its own.
+  mebasic explains source code in plain words and guides its organisation around
+  meaningful controllers, objects and flows, independent of implementation language
+  or IDE. This file defines the language. It is edited only by the architect,
+  or with the architect's approval; an LLM never changes it on its own.
 ---
 # mebasic
 
 ## Purpose
 
-MeBasic is a plain-text language for interpreting a project and its source code
-so people can understand them without knowing the underlying implementation
-language. It is independent of any editor, IDE, model provider or source layout.
-Descriptions use flexible prose rather than a strict grammar. The top-level folder
-structure below is mandatory; flexibility applies to the explanations inside it,
-not to folder names or placement. Omit unnecessary detail within descriptions.
+MeBasic is a plain-text language layered over any project's source code. It has
+two purposes: explain the project in its own terms, and guide restructuring of
+the project into the MeBasic way. It is independent of any editor, IDE, model
+provider or implementation layout. It does not define how the program runs.
 
 Start with what the project does, who uses it, and its main concepts. Explain
 purpose and useful behaviour first, then let links lead to deeper detail.
-MeBasic operates above the function level: describe concepts, responsibilities,
-relationships and journeys, without a function-by-function inventory or call
-signatures. Source details remain available as supporting evidence.
+Descriptions operate above individual functions: explain responsibilities,
+relationships and journeys, without inventories of functions or call signatures.
+The collection structure is mandatory; prose within it is flexible.
 
-## Project identity and containment
+Before generating or regenerating descriptions, read the project's `AGENTS.md`
+(or `agents.md`), applicable nested instructions and referenced guidance. Read
+existing portable context, documentation, relevant implementation and tests.
+Develop a deep understanding of purpose, architecture, responsibilities and actual
+behaviour. Names and folder listings alone are not enough. If there are no agent
+instructions, study project documentation and source directly.
 
-A MeBasic project has one JSON `mebasic-src/<name>.mebasic` configuration with
-`format: "mebasic"`, `version: 1`, and a nonempty `name`. It identifies the project
-and may hold generation status, maintenance preferences and tool-specific settings.
-Preserve unknown fields. A directory alone does not imply consent to generate or
-maintain descriptions; initial generation requires explicit user approval.
+## Collections: meaning and generation
 
-All files created or changed by MeBasic generation and maintenance stay inside
-`mebasic-src/`. Descriptions interpret implementation files in their existing
-locations; generating an interpretation never authorises changing, moving or
-deleting those implementation files. Private authoring records belong under
-`mebasic-src/.mebasic/`; portable understanding belongs under `mebasic-src/context/`.
+Each collection is a distinct view of the same project. Choose meaningful concepts
+from a deep reading of the source, and link the views rather than repeating them.
+Explain implemented behaviour faithfully; distinguish proposed structure and
+unresolved questions from what exists today.
 
-## Folder Structure
+### UI and widgets
 
-- MeBasic Markdown descriptions live in `<project>/mebasic-src/`. The implementation
-  may use any language or directory layout. Supporting code paths refer to the
-  actual implementation relative to the project root.
-- Keep captured UI images in `<project>/mebasic-src/screenshots/` (PNG or JPEG).
-  These are real screenshots of the project UI, not invented mockups. Keep their
-  provenance and capture date in the related description when useful. Omit a
-  screenshot reference when no verified image is available.
-- Every generated MeBasic project must create these exact folders directly under
-  `mebasic-src/`, with these exact lowercase names:
+The UI collection describes the pages of the application: what each page is for,
+what users can understand or do there, and how actions, feedback and errors appear.
+Discover pages from actual user journeys and interfaces. Link their events,
+modules and objects so a reader can follow an action into the application.
 
-  ```text
-  mebasic-src/
-    modules/
-    objects/
-    flow/
-    algorithms/
-    constraints/
-    ui/
-    data/
-    widgets/
-    events/
-    screenshots/
-    context/
-  ```
+Widgets are the smaller, ideally reusable parts of these pages. Describe their
+purpose, displayed information, inputs and interactions, and link their containing
+pages and relevant events. Group by meaningful UI responsibility, not every visual
+component or implementation class. Widget descriptions belong inside UI.
 
-  These names and their placement directly under `mebasic-src/` are mandatory.
-  Each category is a sibling of the others, with its own content.
-  Datastore descriptions belong in `data/` and use the `_store.md` suffix.
-  Populate each description category with its own source-grounded content as
-  defined below: modules contain modules, objects contain objects, and so on.
-  If the project has no applicable concept for a category, keep that folder and
-  include a short Markdown explanation of why it does not apply; never invent
-  program features to fill it. `screenshots/` contains only real available UI
-  captures and may remain empty; `context/` contains the portable project context.
-  Context is authoring memory rather than a description category.
-  Subfolders may group descriptions within their correct category but must not
-  relocate another category beneath it.
-- One file per thing described, named in lowercase letters and digits, then
-  its primitive's suffix: `_mod.md`, `_obj.md`, `_flow.md`, `_alg.md`,
-  `_con.md`, `_ui.md`, `_store.md`, `_widget.md` or `_event.md`, respectively.
-- Statements are bullets inside modules, not separate files or folders.
-- No README or index files: each file is its own read-me.
-- `modules/project_mod.md` is the starting point: purpose, users, main concepts
-  and major parts, with links into the project.
+Real screenshots also belong inside UI. A page's front matter can point to its
+relevant capture. Use verified project screenshots, with provenance and capture
+date when useful; omit the reference when no verified image is available.
 
-## File Format
+### Modules
 
-Description files normally follow this order:
+Modules are the controllers of the application. Think of a module as an API with
+meaningful input paths: each path receives some input, performs a responsibility
+and returns a result. These paths can originate in UI actions, events, other
+modules or external systems; they need not be network endpoints.
 
-1. **Front matter**, between `---` lines:
-   - `title`: the name of what it describes.
-   - `summary`: one sentence, at most 160 characters.
-   - `description: >` then indented lines: a few sentences in plain words.
-   - For a UI page, `screenshot: screenshots/page.png` points to the relevant UI
-     image, relative to `mebasic-src/`. It must exist inside `screenshots/`.
-     The image illustrates the described UI page. For example:
-     `screenshot: screenshots/settings.png`.
-2. **`# Title`**: the one heading of that level, the same as `title`.
-3. **The body**, as its primitive gives it below.
-4. **Bottom matter**, between `---` lines at the very end: `code:`, then
-   an indented YAML list of paths naming supporting code from the repository
-   root. Use `code: []` when there is no implementation evidence yet.
+Determine controller boundaries by deeply understanding how the project works.
+One module may correspond to one source file or a small collection of files.
+Group related operations by coherent responsibility, ownership and rules, rather
+than mechanically mapping directories or creating a module for every file.
 
-The front-matter `title` is the human-readable name of a description; the filename
-and primitive suffix identify its file and kind.
+For each module, describe:
 
-Links are relative paths to `.md` files and must lead to a file that exists.
-Link related descriptions where they help readers follow ownership, use,
-dependencies or data movement. The folders group descriptions by kind.
+- **Inputs:** its input paths, what each accepts, where the input comes from,
+  and the result that path returns, including meaningful failure outcomes.
+- **Processing:** the rules it preserves and how it coordinates objects, data,
+  algorithms and other modules. Group related work into readable statements.
+- **Output:** the useful results and effects, linked back to the paths that
+  produce them and the flows that use them.
 
-### Module
+A statement is a bullet explaining a meaningful step: what comes in, what is
+done and what goes out. Link an algorithm when it explains the step. Statements
+stay within modules; they are not individual functions or separate files.
 
-1. **`## Inputs`**: the meaningful things it receives. Each bullet starts
-   with the input in bold, then what it is, where it comes from, and what
-   responsibility handles it.
-2. **`## Processing`**: first the rules it keeps, in a short paragraph; then
-   one or more processing groups, each a `### Group` followed by its
-   statements.
-3. **`## Output`**: its meaningful results, each bullet starting
-   with the output in bold. Notes, such as known breaches, follow as
-   `###` headings.
+`modules/project_mod.md` introduces the whole project's purpose, users, main
+concepts and controller groups, linking to their descriptions.
 
-### Object
+### Objects
 
-- **`## Attributes`**: a list of what it holds. Each bullet starts with the
-  attribute in bold, then what it is.
-- Explain what the object represents and why it exists in its description.
-  **`## Behaviour`** explains its useful operations and the rules it preserves;
-  link the modules that use it and related objects where helpful.
+Objects are the major encapsulated classes or models of the project: meaningful
+concepts that can have instances, attributes and behaviour. In an object-oriented
+project, find the large logical groupings rather than listing every class. The
+same concepts can be represented across files in a non-object-oriented project.
 
-### Other descriptions
+A Player is a meaningful object; a trivial Rect or a structure used only to bundle
+parameters is not. Identify the concept's identity, lifecycle, ownership, useful
+behaviour and rules. Describe its **Attributes** and **Behaviour**, and link the
+modules that operate on it and the other objects it relates to.
 
-Choose short headings that answer these questions:
+Aim for object-classes that express the project's major instantiable concepts
+clearly. Map each concept to the actual implementation, even when that
+implementation is scattered or poorly encapsulated. If a better grouping would
+serve the MeBasic structure, record the proposal in restructuring notes and
+identify it as a proposal, rather than claiming the source already has that design.
 
-- **Flow**: what starts it, what information travels through which modules,
-  how it changes, and what useful result or failure ends it?
-- **Algorithm**: what problem does it solve, with what inputs, main steps,
-  result and limitations? Link the descriptions that use it.
-- **Constraint**: what rule applies, why, where does it come from, and what
-  happens when it cannot be met? Link the affected things.
-- **UI page**: what can the user understand or do here, what actions are
-  available, and what feedback or errors appear? Link the underlying work.
-- **Datastore**: what is kept, why, where, who reads or changes it, and how
-  long does it last? Explain relevant loss or recovery behaviour.
-- **Widget**: what meaningful part of a UI page is this, what does it show
-  or let the user do, and which events connect it to the program? Link its
-  containing page and the objects or modules involved.
-- **Event**: what occurrence triggers a response, where does it originate,
-  what information accompanies it, and which object or module responds?
-  Explain the visible result and link the relevant flow, without enumerating
-  individual handler functions. Events can come from users or the system.
+### Flow
 
-## Understand the project before generating
+Flow views the project as a factory: what comes in, how it is changed, and what
+comes out. It sits above code structure and follows a meaningful journey through
+the application, rather than reproducing its call graph.
 
-Before generating or regenerating MeBasic files, read the project's `AGENTS.md`
-(or `agents.md`), applicable nested instructions, and the guidance they reference.
-If no such file exists, study the project's own documentation and source directly.
-Develop a deep understanding of the project's purpose, architecture, major
-responsibilities, relationships, user journeys and actual behaviour. Read relevant
-implementation and tests; names and folder listings alone are not enough.
-Distinguish intended behaviour from implemented behaviour and unresolved questions.
+Identify the starting input or trigger, the transformations and decisions, and
+the useful output or failure outcome. For each stage, link the MeBasic modules
+and objects involved. Explain how information and responsibility pass between
+them so the reader can understand the whole process independently of file layout.
 
-### Portable project context
+### Data
+
+Data describes the project's information structures and where they are stored:
+databases, schemas, persisted models, records, files, caches and relevant in-memory
+representations. Discover what information exists, how it is shaped, who reads or
+changes it, and where it lives. Explain lifetime, persistence, loss and recovery
+where relevant.
+
+An object describes an encapsulated domain concept; a data description explains
+its representation and storage. A model can participate in both views. Link them
+and explain their different responsibilities. Data descriptions use the Datastore
+primitive and belong in `data/`.
+
+### Events
+
+Events are occurrences that trigger the application and the reactions they cause.
+They can originate with users, external systems or internal work completing.
+Identify the trigger, accompanying information, responding modules or objects,
+and observable result. Link the flow it starts or continues. Explain meaningful
+reactions rather than enumerating individual handler functions.
+
+### Algorithms
+
+Algorithms explain significant procedures used by modules and flows. Identify the
+problem, inputs, important steps, result and limitations. Describe enough reasoning
+to understand the procedure, and link the concepts that use it; avoid translating
+implementation code line by line.
+
+### Constraints
+
+Constraints describe rules the project must respect. Explain the rule, its origin
+and reason, its scope, and what happens when it cannot be met. Link affected
+concepts. Include accepted user instructions and corrections, and distinguish a
+requested rule from verified enforcement in the source.
+
+## Restructuring the project
+
+MeBasic also aims to bring the implementation into a clearer organisation around
+its controllers, major objects and flows. While understanding the project, look
+for better responsibility boundaries, encapsulation and relationships. Record
+these in `mebasic-src/.mebrain/restructuring.md` when improvements are identified.
+
+Explain the current structure, proposed structure, reason for the improvement,
+affected source locations and concepts, and relevant tradeoffs or open decisions.
+Keep accepted, proposed and completed changes distinguishable. Preserve earlier
+notes and user decisions. Descriptions can explain the ideal concept while making
+its current implementation and any gap explicit.
+
+Generating descriptions and restructuring notes does not itself authorise changing
+implementation code. Carry out implementation restructuring when the user requests
+or approves that work, then update the affected descriptions to reflect the result.
+
+## Portable project context
 
 Keep reusable understanding in `mebasic-src/context/project-context.md`. Before
 initial generation, regeneration or maintenance, read this file if it exists.
@@ -252,60 +250,105 @@ or uncertain explanations instead of presenting guesses as facts.
   write and preserve both versions for review. This record supports careful LLM
   maintenance; recorded authorship must be supported by evidence.
 
-## Primitives
+## Project identity and containment
 
-- **Module**: a group of related work, like an endpoint group such as auth:
-  its inputs, its processing as groups of statements, and its outputs.
-- **Statement**: a single explanation of what happens inside a module, as
-  one bullet: what comes in, what is done, what goes out, and a link to the
-  algorithm it uses, when it uses one.
-- **Object**: a concrete, encapsulated thing, like a class; its file
-  describes its meaning, attributes and behaviour.
-- **Flow**: a path data takes across modules, from what starts it to what it
-  ends in.
-- **Algorithm**: a reusable procedure that modules and flows use.
-- **Constraint**: a group of rules: what must never happen, what happens
-  instead, and where each rule comes from.
-- **UI page**: a surface a person uses: a window, a panel, a command line,
-  an API.
-- **Datastore**: where data is kept: what is stored, how it is written and
-  read, and how long it lasts.
-- **Widget**: a meaningful UI element, such as a button, field or list,
-  described through its purpose and interaction with the program.
-- **Event**: an occurrence, such as a click, file change or completed task,
-  that causes an object or module to respond.
+A MeBasic project has one JSON `mebasic-src/<name>.mebasic` configuration with
+`format: "mebasic"`, `version: 1`, and a nonempty `name`. It identifies the project
+and may hold generation status, maintenance preferences and tool-specific settings.
+Preserve unknown fields. A directory alone does not imply consent to generate or
+maintain descriptions; initial generation requires explicit user approval.
 
-## Organisation
+All files created or changed by MeBasic generation and maintenance stay inside
+`mebasic-src/`. Descriptions interpret implementation files in their existing
+locations; generating an interpretation never authorises changing, moving or
+deleting those implementation files. Private authoring records belong under
+`mebasic-src/.mebasic/`; portable understanding belongs under `mebasic-src/context/`.
 
-Explain concepts as Objects and related work as Modules with clear
-responsibilities. Describe encapsulation and relationships as they exist in the
-source; this interpretation does not require rewriting the implementation.
+## Folder structure
 
-## Example
+MeBasic files live in `<project>/mebasic-src/`. The implementation can use any
+language or layout; supporting code paths name its actual files relative to the
+project root. Create the following exact lowercase folders and hierarchy:
 
-In a text editor, `modules/project_mod.md` explains that users open, edit and
-save documents, and links to `objects/document_obj.md` and `flow/save_flow.md`.
-The Document description explains its text, unsaved changes and editing
-behaviour. The Save flow follows the user's Save action through the file module
-to disk, linking `constraints/externalchange_con.md` to explain why a conflicting
-disk edit prevents saving. A Save Widget links its UI page to a Save-requested
-Event, which leads to that flow. These example files are illustrative, not required
-project concepts; create them before using actual Markdown links.
+```text
+mebasic-src/
+  <name>.mebasic
+  ui/
+    widgets/
+    screenshots/
+  modules/
+  objects/
+  flow/
+  data/
+  events/
+  algorithms/
+  constraints/
+  context/
+  .mebrain/                 # restructuring notes when needed
+  .mebasic/                 # private authoring records
+```
+
+Each description collection contains its own source-grounded content. Widgets
+and screenshots are inside `ui/`; the other collections are top-level siblings.
+Subfolders may organise a collection's own descriptions without relocating another
+collection. These names and placements are required, not discretionary.
+
+If a description collection genuinely does not apply, retain its folder with a
+short Markdown explanation of why; never invent features to fill it. Screenshots
+are real PNG/JPEG captures in `ui/screenshots/` and may be absent. `context/`
+contains portable authoring memory, not user-facing descriptions. `.mebrain/`
+contains restructuring notes, and `.mebasic/` contains private history and baselines.
+
+Use one file per thing described, with a lowercase name and the primitive suffix:
+`_ui.md`, `_widget.md`, `_mod.md`, `_obj.md`, `_flow.md`, `_store.md`, `_event.md`,
+`_alg.md` or `_con.md`. Statements are bullets within modules. Do not add README
+or index descriptions: each description is its own read-me. The project entry point
+is `modules/project_mod.md`.
+
+## File format
+
+Description files normally follow this order:
+
+1. **Front matter**, between `---` lines:
+   - `title`: the human-readable name of what is described.
+   - `summary`: one sentence, at most 160 characters.
+   - `description: >` followed by indented plain-word sentences.
+   - For a UI page, optional `screenshot: ui/screenshots/settings.png`, relative
+     to `mebasic-src/`, pointing to an existing PNG/JPEG inside `ui/screenshots/`.
+2. **`# Title`**, matching the front-matter title.
+3. **The body**, explaining the concept using its collection guidance above.
+4. **Bottom matter**, between `---` lines at the very end: `code:` followed by
+   an indented YAML list of supporting implementation paths relative to the project
+   root. Use `code: []` when implementation evidence is absent.
+
+The title names the concept for readers; the filename and suffix identify the
+file and its primitive. Links between descriptions use relative paths to existing
+Markdown files. Link where it helps explain ownership, use, dependencies or data
+movement. Keep supporting evidence distinct from proposals.
 
 ## IDE settings
 
-The following optional presentation metadata is for editors and IDEs that display
-MeBasic projects.
-`hidden_folders` names folders to exclude from the MeBasic navigation view while
-retaining them on disk for authoring. Implementations choose their own UI controls
-and layout.
-
-```yaml
-hidden_folders:
-  - context
-  - .mebasic
-```
+The terminal `ide_settings` mapping provides presentation metadata for consuming
+editors. `hidden_folders` lists folder names to omit from MeBasic navigation while
+retaining their files for authoring. `folder_order` orders top-level collection
+folders; other folders follow in alphabetical order. Widgets and screenshots are
+shown under UI according to their on-disk placement. Editors choose their own
+controls and layout.
 
 ---
+ide_settings:
+  hidden_folders:
+    - context
+    - .mebasic
+    - .mebrain
+  folder_order:
+    - ui
+    - modules
+    - objects
+    - flow
+    - data
+    - events
+    - algorithms
+    - constraints
 code: []
 ---
