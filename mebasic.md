@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 8
+  revision: 9
   updated: "2026-10-11"
-  summary: "Preserve portable human-edit blocks; distinguish continuation and rebuild with or without human text."
+  summary: "Track precise human text ranges without attributing surrounding generated content."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -439,26 +439,31 @@ to refresh the whole interpretation from current source while preserving user ed
 Alternatively, the user may explicitly choose a fresh regeneration that discards
 existing descriptions and edits, screenshots, portable context, restructuring notes
 and generation history. Explain that deletion before asking the user to choose.
-Human authorship travels with the Markdown file. Enclose human-authored or
-human-edited blocks with these markers, on their own lines:
+Human authorship travels with the Markdown file. Record only the actual text
+inserted or replaced by the human; changing one character does not attribute a
+paragraph, list, heading or whole document to them. Loading a file or an AI update
+never makes its text human-authored. Editors highlight the precise human ranges
+and hide provenance metadata from the editable text, selections and clipboard.
 
-```markdown
-<!-- mebasic:author=human -->
-Text the human wrote or explicitly edited.
-<!-- /mebasic:author -->
-```
+Store precise attribution in a terminal HTML comment on its own line:
+`<!-- mebasic:human-ranges {"version":1,"ranges":[{"from":0,"to":4,"text":"Mine"}]} -->`.
+Offsets are zero-based UTF-8 byte offsets, end-exclusive, into the Markdown before
+the newline introducing this comment. Each sorted, non-overlapping range repeats
+its exact text for integrity checking. Escape `<` as `\u003c` in JSON strings.
+This metadata works for front matter and fenced code without changing their syntax.
+When editing surrounding generated content, adjust the offsets and verify every
+range against its text; never transfer attribution to unrelated text. Preserve
+human text unless its deletion was explicitly approved. Metadata mismatches require
+reconciliation against evidence, not guessed authorship.
 
-Within YAML front matter, use YAML comments `# mebasic:author=human` and
-`# /mebasic:author` around complete fields instead, so the metadata remains valid.
-Markers identify a human-edited block, not a claim that every word originated with
-that person. Do not nest markers or put them inside code fences. Never invent human
-attribution for generated text. Existing unmarked text has unknown authorship;
-loading a file does not make it human-authored. A human may mark existing text to
-protect it. Editors should visually distinguish marked blocks and record manual
-edits at block boundaries. AI edits and disk reloads must not acquire human markers.
+Existing paired `<!-- mebasic:author=human -->` / `<!-- /mebasic:author -->` block
+markers (or YAML `#` equivalents) remain readable. Hide these markers in editors.
+Do not widen their attribution on further edits. Their original fine-grained human
+edits cannot be recovered from the block alone; do not guess which words were human.
+Never treat marker examples inside fenced code as attribution.
 
 Regeneration has three explicit choices: continue in place; rebuild generated
-content while retaining marked human blocks at their original file paths; or
+content while retaining attributed human text at its original file paths; or
 rebuild including deletion of human blocks. The last choice requires explicit
 human selection. Rebuild with preservation leaves fragments for the agent to
 complete into valid descriptions; preserve their exact wording and attribution.

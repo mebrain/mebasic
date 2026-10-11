@@ -62,3 +62,8 @@ Preserve portable human-edit blocks (`<!-- mebasic:author=human -->` through
 Never assign these markers to AI output. Continue edits in place unless the user
 chooses rebuilding. Rebuild retains human blocks unless deletion of human text
 was explicitly selected. Resolve conflicts with human text by asking the architect.
+
+Precise human text is recorded in a terminal `mebasic:human-ranges` JSON comment.
+Follow the specification's UTF-8 offsets and text checks; update offsets when
+surrounding AI content changes. A one-character edit protects that character,
+not the surrounding list or file. Never assign human attribution to AI output.
