@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 3
+  revision: 4
   updated: "2026-10-11"
-  summary: "Define the generation kickoff prompt in IDE settings."
+  summary: "Offer preservation or explicitly approved fresh regeneration."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -371,6 +371,13 @@ Generate an initial interpretation only after explicit user approval. Automatic
 maintenance requires prior project authorisation. Never regenerate an
 existing tree wholesale automatically. A user may explicitly confirm regeneration
 to refresh the whole interpretation from current source while preserving user edits.
+Alternatively, the user may explicitly choose a fresh regeneration that discards
+existing descriptions and edits, screenshots, portable context, restructuring notes
+and generation history. Explain that deletion before asking the user to choose.
+Preservation is the default. Fresh regeneration rebuilds the interpretation from
+current source; it does not restore deliberately discarded material from an earlier
+conversation. It never authorises deleting implementation files, project identity,
+IDE preferences, conversations, tasks or unrelated files.
 Distinguish observed behaviour from inference, intended behaviour and missing
 implementation. Update affected descriptions when source changes; flag stale
 or uncertain explanations instead of presenting guesses as facts.
@@ -385,7 +392,8 @@ or uncertain explanations instead of presenting guesses as facts.
   After an implementation change, evaluate whether descriptions remain accurate;
   when needed, update only affected descriptions, relationships and supporting paths.
   Keep user-facing names consistent across `mebasic-src/`.
-- Never overwrite user changes in `mebasic-src/`. Re-read each file immediately before
+- Except for material deliberately discarded by explicitly approved fresh regeneration,
+  never overwrite user changes in `mebasic-src/`. Re-read each file immediately before
   editing and compare it with the last recorded baseline. Preserve user wording,
   names, additions and deletions; make small edits around them. If a change
   conflicts with the user's text, leave that text intact, record the conflict
@@ -520,6 +528,13 @@ silently substitute another kickoff prompt. If it is missing or unreadable, repo
 the problem before starting generation. The prompt assumes the agent's working
 directory is `mebasic-src/`, with read access to the parent project and write access
 limited to `mebasic-src/`. Editors establish that context before submitting it.
+`fresh_generation_prompt` is the corresponding kickoff message when the user
+explicitly chooses to discard the existing interpretation and start fresh. Read
+and check the selected prompt before clearing any files. Both choices use the
+user's current agent and model. Never substitute the preservation prompt when the
+fresh prompt is missing. Editors clear only interpretation content and authoring
+memory; they retain identity and unrelated runtime data. If an interpretation
+location contains unexpected files or redirects elsewhere, stop before deleting.
 
 ---
 ide_settings:
@@ -533,6 +548,26 @@ ide_settings:
     the project purpose, architecture and actual source before generating descriptions.
     Read context/project-context.md if present and maintain it for future runs.
     Preserve existing descriptions and user edits. Follow the current specification's
+    required collection hierarchy and use actual source to decide useful descriptions
+    within each category. Fill each collection with its own content as specified.
+    Review the interpretation for omissions and report unfinished work.
+    Use only real screenshots. All MeBasic writes, including private history and
+    baselines, must stay in this directory. Do not change implementation files.
+    The editor owns the project configuration file with the .mebasic extension;
+    never remove it or create another one.
+  fresh_generation_prompt: |-
+    The user explicitly chose Start fresh and approved discarding the existing
+    interpretation and user edits. Generate
+    the interpretation yourself in this turn, using the user-selected agent, model
+    and reasoning settings. Do not delegate or create a worker handoff.
+    Your working directory is mebasic-src; the project root is one directory above it.
+    Read the project-root AGENTS.md (or agents.md), applicable nested instructions
+    and their referenced guidance. Read .mebasic/mebasic.md and deeply understand
+    the project purpose, architecture and actual source before generating descriptions.
+    Create new context/project-context.md and new generation history for future runs.
+    Rebuild from current source. Do not restore deliberately discarded descriptions,
+    edits or context from earlier conversation. Leave unrelated retained files intact.
+    Follow the current specification's
     required collection hierarchy and use actual source to decide useful descriptions
     within each category. Fill each collection with its own content as specified.
     Review the interpretation for omissions and report unfinished work.
