@@ -13,7 +13,7 @@ and relationships above individual functions. Follow [mebasic.md](../../mebasic.
 
 First check for a valid `mebasic-src/<name>.mebasic` project configuration.
 Without it, do nothing: opening a folder or coding is not consent. Initial
-generation requires explicit user approval through the IDE. Pending generation
+generation requires explicit user approval. Pending generation
 requires an explicit retry; only ready projects receive automatic maintenance.
 
 After coding in an opted-in project, compare this task's changes with the existing interpretation:
@@ -48,13 +48,11 @@ user edits and implementation locations; and maintains private history and
 baselines under `mebasic-src/.mebasic/`. Every MeBasic write stays inside
 `mebasic-src/`; source elsewhere is read-only evidence. Initial generation must inspect actual source and
 create every exact top-level folder required by the current specification and fill
-each description category with its own content. Use `data/` for datastore descriptions, not `datastores/`; keep worker context
-out of the user-facing sidebar. Folder names and placement are
+each description category with its own content. Use `data/` for datastore descriptions. Folder names and placement are
 mandatory, not discretionary: never put other categories under modules. Use
 judgment for the explanations inside each category; document genuine inapplicability
-rather than inventing features. In approved regeneration, correct earlier AI nesting
-while preserving content and user edits, repairing links and context, and recording
-moves. Do not mistake existing AI organization for a user instruction.
+rather than inventing features. When changing organization, preserve content and user edits, repair links and
+context references, and record moves.
 Review content and top-level placement before completion; no machine-readable
 coverage report is required. Keep only real captures in screenshots. The IDE owns the
 project configuration; do not remove it or create competing marker files.

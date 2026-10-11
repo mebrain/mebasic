@@ -12,9 +12,10 @@ description: >
 
 ## Purpose
 
-MeBasic is the user-facing interpretation of complex source code. This IDE
-helps users explore that interpretation without needing to know the underlying
-language. Descriptions use flexible prose rather than a strict grammar. The top-level folder
+MeBasic is a plain-text language for interpreting a project and its source code
+so people can understand them without knowing the underlying implementation
+language. It is independent of any editor, IDE, model provider or source layout.
+Descriptions use flexible prose rather than a strict grammar. The top-level folder
 structure below is mandatory; flexibility applies to the explanations inside it,
 not to folder names or placement. Omit unnecessary detail within descriptions.
 
@@ -24,45 +25,25 @@ MeBasic operates above the function level: describe concepts, responsibilities,
 relationships and journeys, without a function-by-function inventory or call
 signatures. Source details remain available as supporting evidence.
 
-## Project opt-in and containment
+## Project identity and containment
 
-Opening a folder does not make it a MeBasic project. Without a valid
-`mebasic-src/<name>.mebasic` configuration, show a warning in the IDE's Code column offering
-Generate MeBasic. Do not create folders, install a specification, write memory,
-or generate descriptions until the user explicitly approves generation. Neither
-an existing `mebasic-src/` directory nor substantial coding work implies consent.
+A MeBasic project has one JSON `mebasic-src/<name>.mebasic` configuration with
+`format: "mebasic"`, `version: 1`, and a nonempty `name`. It identifies the project
+and may hold generation status, maintenance preferences and tool-specific settings.
+Preserve unknown fields. A directory alone does not imply consent to generate or
+maintain descriptions; initial generation requires explicit user approval.
 
-Approved generation creates one JSON `<name>.mebasic` file in the root of
-`mebasic-src/`. It identifies the project (`format: "mebasic"`, `version: 1`,
-`name`) and holds all MeBasic project configuration: generation status, maintenance
-settings/model overrides and project preferences. Preserve unknown fields.
-A valid configuration is the opt-in marker; an incomplete generation stays pending
-until retried explicitly. Once generation is ready, maintain affected descriptions
-automatically according to the skill. Invalid or ambiguous markers do not activate it.
-
-All MeBasic-generated files and writes stay inside `mebasic-src/`: descriptions,
-screenshots, specification, skill, project configuration, tasks, conversations,
-analysis, correction memory and private history. Keep internal data in its hidden
-`.mebasic/` subfolder. Read implementation elsewhere as evidence but never modify,
-move or delete it as part of MeBasic generation or maintenance. Leave legacy
-root-level `.mebasic/` files untouched; do not migrate or delete them on open.
-Ordinary source edits requested by the user are separate from MeBasic maintenance.
+All files created or changed by MeBasic generation and maintenance stay inside
+`mebasic-src/`. Descriptions interpret implementation files in their existing
+locations; generating an interpretation never authorises changing, moving or
+deleting those implementation files. Private authoring records belong under
+`mebasic-src/.mebasic/`; portable understanding belongs under `mebasic-src/context/`.
 
 ## Folder Structure
 
-- The maintained specification is `mebasic.md` in https://github.com/mebrain/mebasic.
-  The IDE keeps a separate checkout at `mebasic/mebasic.md`.
-  Only after explicit opt-in, the IDE installs it at
-  `<project>/mebasic-src/.mebasic/mebasic.md`; the companion skill lives beside it
-  under `.mebasic/skills/mebasic/SKILL.md` inside `mebasic-src/`.
-- MeBasic Markdown descriptions live in `<project>/mebasic-src/`; these are the files
-  the user primarily reads. Preserve implementation files in their existing
-  locations; generating MeBasic never authorises moving or rewriting them.
-  This IDE repository uses `inner-src/`, but other projects may use any layout.
-  For example,
-  `mebasic-src/modules/project_mod.md` explains the project and
-  `mebasic-src/objects/document_obj.md` explains a document, with supporting code paths
-  pointing into `inner-src/`.
+- MeBasic Markdown descriptions live in `<project>/mebasic-src/`. The implementation
+  may use any language or directory layout. Supporting code paths refer to the
+  actual implementation relative to the project root.
 - Keep captured UI images in `<project>/mebasic-src/screenshots/` (PNG or JPEG).
   These are real screenshots of the project UI, not invented mockups. Keep their
   provenance and capture date in the related description when useful. Omit a
@@ -85,30 +66,18 @@ Ordinary source edits requested by the user are separate from MeBasic maintenanc
     context/
   ```
 
-  This is the MeBasic method, not a suggestion. Do not rename, merge, omit or nest
-  these top-level folders under another category. In particular, `modules/objects/`,
-  `modules/flow/` and `modules/ui/` are not substitutes for the required folders.
-  The storage-description folder is named `data/`, not `datastores/`. Datastore
-  descriptions use this folder and retain their `_store.md` suffix. During approved
-  regeneration, correct any older `datastores/` naming and repair its links.
+  These names and their placement directly under `mebasic-src/` are mandatory.
+  Each category is a sibling of the others, with its own content.
+  Datastore descriptions belong in `data/` and use the `_store.md` suffix.
   Populate each description category with its own source-grounded content as
   defined below: modules contain modules, objects contain objects, and so on.
   If the project has no applicable concept for a category, keep that folder and
   include a short Markdown explanation of why it does not apply; never invent
   program features to fill it. `screenshots/` contains only real available UI
   captures and may remain empty; `context/` contains the portable project context.
-  Always hide `context/` from the MeBasic sidebar; it is worker memory, not a
-  user-facing description category. The worker must still read and maintain it.
+  Context is authoring memory rather than a description category.
   Subfolders may group descriptions within their correct category but must not
   relocate another category beneath it.
-- During explicitly approved regeneration, correct earlier AI-created nesting
-  within `mebasic-src/`: preserve description content and user edits, relocate it
-  to the proper category, and repair links and context references. Existing AI
-  output or remembered context is not evidence that the user chose that layout.
-  Record moves in private history. Do not move implementation files. If an actual
-  explicit user instruction conflicts, report the conflict instead of silently
-  overriding it.
-
 - One file per thing described, named in lowercase letters and digits, then
   its primitive's suffix: `_mod.md`, `_obj.md`, `_flow.md`, `_alg.md`,
   `_con.md`, `_ui.md`, `_store.md`, `_widget.md` or `_event.md`, respectively.
@@ -127,8 +96,7 @@ Description files normally follow this order:
    - `description: >` then indented lines: a few sentences in plain words.
    - For a UI page, `screenshot: screenshots/page.png` points to the relevant UI
      image, relative to `mebasic-src/`. It must exist inside `screenshots/`.
-     Selecting that UI description shows the screenshot in one pane and the
-     editable Markdown description in the other. For example:
+     The image illustrates the described UI page. For example:
      `screenshot: screenshots/settings.png`.
 2. **`# Title`**: the one heading of that level, the same as `title`.
 3. **The body**, as its primitive gives it below.
@@ -136,10 +104,8 @@ Description files normally follow this order:
    an indented YAML list of paths naming supporting code from the repository
    root. Use `code: []` when there is no implementation evidence yet.
 
-The IDE displays each description's front-matter `title`, rather than its
-filename. Primitive suffixes such as `_mod` and `_ui` remain in filenames but
-are hidden in the interface. If the title is missing or malformed, use the
-filename without `.md` and its primitive suffix so the file remains editable.
+The front-matter `title` is the human-readable name of a description; the filename
+and primitive suffix identify its file and kind.
 
 Links are relative paths to `.md` files and must lead to a file that exists.
 Link related descriptions where they help readers follow ownership, use,
@@ -203,7 +169,7 @@ Keep reusable understanding in `mebasic-src/context/project-context.md`. Before
 initial generation, regeneration or maintenance, read this file if it exists.
 If it is absent, build the understanding from project guidance and actual source,
 then create it. Update it before finishing each generation or meaningful maintenance
-run so a fresh worker can continue after an IDE restart or project move.
+run so a fresh worker can continue across authoring sessions and project moves.
 
 Use concise prose to capture project purpose, architecture, important concepts and
 relationships, accepted decisions and terminology, relevant source locations,
@@ -216,27 +182,21 @@ The context supplements `AGENTS.md`, the current specification and actual source
 Read the instructions first, then check remembered understanding against current
 files and corrections; update stale facts rather than carrying them forward.
 Preserve user edits and record disagreements instead of overwriting them silently.
-All context writes stay inside `mebasic-src/context/`. The IDE can use a fresh worker
-for every call because continuity lives with the project, not in a provider session.
+All context writes stay inside `mebasic-src/context/`. Continuity lives with the
+project and does not depend on a particular authoring session or model provider.
 
-## Generating a missing interpretation
+## Generating an interpretation
 
-The IDE offers Generate MeBasic below the warning in its Code column for an unregistered
-project. Confirmation is required before any project writes. The IDE creates the
-configuration and installs language resources inside `mebasic-src/`, then delegates
-creation to a capable agent using the skill-configured model and reasoning effort. The worker reads actual source, preserves
-existing descriptions and writes only inside this directory. It surveys the
-description kinds above and creates source-backed pages for each applicable kind,
-including useful flows and concepts beyond modules.
-The AI judges useful content within each required category and reviews the result
-for omissions and correct top-level placement before declaring completion. The
-folder layout is mandatory authoring guidance from this specification; the IDE
-does not impose a separate hardcoded language validator or coverage-report schema.
-A successful generation worker enables maintenance; report unfinished work clearly.
-Create `screenshots/` even if no verified captures
-are available. Report failures and
-missing screenshots instead of fabricating content; a failed generation remains
-pending and must not silently enable automatic maintenance.
+After explicit user approval, understand the project as described above, create the
+required folder structure, and populate each category with its own source-grounded
+explanations. Begin with `modules/project_mod.md` and link the project's purpose,
+users, concepts and responsibilities to their detailed descriptions.
+
+Preserve existing user content and accepted terminology. Review the interpretation
+for useful coverage, correct category placement, valid links and supporting source
+references before declaring completion. Use judgment for explanatory content within
+the required structure. Report unfinished work, uncertainty and unavailable real
+screenshots clearly rather than inventing content or claiming completion.
 
 ## Accuracy
 
@@ -247,12 +207,9 @@ remain accurate. Changes to behaviour, concepts, responsibilities, relationships
 user terminology or constraints require updates to the affected descriptions and
 links only. Judge meaning, not diff size; a one-line behaviour change can matter.
 Generate an initial interpretation only after explicit user approval. Automatic
-maintenance requires a valid, ready project configuration. Never regenerate an
+maintenance requires prior project authorisation. Never regenerate an
 existing tree wholesale automatically. A user may explicitly confirm regeneration
 to refresh the whole interpretation from current source while preserving user edits.
-The companion [MeBasic skill](skills/mebasic/SKILL.md) governs this decision and
-delegation to a separate capable agent using the configured reasoning effort; model selection is configurable
-and must not be hardcoded in the IDE.
 Distinguish observed behaviour from inference, intended behaviour and missing
 implementation. Update affected descriptions when source changes; flag stale
 or uncertain explanations instead of presenting guesses as facts.
@@ -261,7 +218,7 @@ or uncertain explanations instead of presenting guesses as facts.
 
 - Read the project-local specification, existing `mebasic-src/` descriptions and
   `mebasic-src/constraints/` before working. Maintain the MeBasic interpretation of the
-  current project (including MeBrain when that is the project being described).
+  current project.
   Work at the level of concepts and responsibilities, not individual functions.
 - Read the relevant implementation in its actual locations before explaining it.
   After an implementation change, evaluate whether descriptions remain accurate;
@@ -293,7 +250,7 @@ or uncertain explanations instead of presenting guesses as facts.
   Append history, preserve existing records, and advance baselines only after
   re-reading the saved result. If files change during reconciliation, stop that
   write and preserve both versions for review. This record supports careful LLM
-  maintenance; it does not imply automatic runtime tracking by the IDE.
+  maintenance; recorded authorship must be supported by evidence.
 
 ## Primitives
 
@@ -334,6 +291,20 @@ to disk, linking `constraints/externalchange_con.md` to explain why a conflictin
 disk edit prevents saving. A Save Widget links its UI page to a Save-requested
 Event, which leads to that flow. These example files are illustrative, not required
 project concepts; create them before using actual Markdown links.
+
+## IDE settings
+
+The following optional presentation metadata is for editors and IDEs that display
+MeBasic projects.
+`hidden_folders` names folders to exclude from the MeBasic navigation view while
+retaining them on disk for authoring. Implementations choose their own UI controls
+and layout.
+
+```yaml
+hidden_folders:
+  - context
+  - .mebasic
+```
 
 ---
 code: []
