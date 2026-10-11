@@ -36,21 +36,63 @@ from a deep reading of the source, and link the views rather than repeating them
 Explain implemented behaviour faithfully; distinguish proposed structure and
 unresolved questions from what exists today.
 
-### UI and widgets
+### Shared opening and reading pattern
+
+Every object, module, flow, UI page, widget, data description, event, algorithm
+and constraint has its own file. Do not combine unrelated items into a catalogue
+file. Begin every description with the same readable opening:
+
+1. **Name:** a clear, human-readable title identifying the item.
+2. **One-line summary:** one succinct sentence saying what it does or represents.
+3. **One paragraph:** explain why it exists, its role in the project and how it
+   relates to the larger picture. Assume the reader has not read the source code.
+
+Follow this opening with the category sections below. Use the given section names
+and order as reading templates; omit sections that add no useful information
+rather than padding them with empty headings. Keep explanations short and concrete.
+Use bullets for parallel facts, numbered steps for sequences, and tables when they
+make inputs, attributes or relationships easier to compare. Do not list functions,
+method signatures or incidental implementation details.
+
+Link related descriptions where they are discussed so readers can move between
+views naturally. Keep supporting source references at the bottom. Clearly label
+proposed improvements and link relevant restructuring notes; do not present them
+as implemented behaviour. The file-format section below defines the metadata.
+
+### UI pages
 
 The UI collection describes the pages of the application: what each page is for,
 what users can understand or do there, and how actions, feedback and errors appear.
 Discover pages from actual user journeys and interfaces. Link their events,
 modules and objects so a reader can follow an action into the application.
 
-Widgets are the smaller, ideally reusable parts of these pages. Describe their
-purpose, displayed information, inputs and interactions, and link their containing
-pages and relevant events. Group by meaningful UI responsibility, not every visual
-component or implementation class. Widget descriptions belong inside UI.
-
 Real screenshots also belong inside UI. A page's front matter can point to its
 relevant capture. Use verified project screenshots, with provenance and capture
 date when useful; omit the reference when no verified image is available.
+
+After the shared opening, present:
+
+- **Screenshot:** the real page capture when available, with a useful caption.
+- **Purpose:** the task the user comes here to accomplish.
+- **Actions:** what the user can do and the result of each action; link events
+  or flows where useful.
+- **Feedback and states:** meaningful loading, empty, success and error states
+  that actually exist, and how the user can respond.
+- **Widgets:** the meaningful components of the page, linked to their own files.
+
+### Widgets
+
+Widgets are the smaller, ideally reusable parts of UI pages. Group by meaningful
+UI responsibility, not every visual component or implementation class. Each widget
+has its own description inside UI and links back to its containing pages.
+
+After the shared opening, present:
+
+- **Displays:** the information or state the widget shows.
+- **Interactions:** what users can do, what input is accepted and what changes.
+- **Used by:** the pages that contain it and meaningful variations in use.
+- **Events:** what it produces or responds to, linking relevant events, modules
+  and objects.
 
 ### Modules
 
@@ -64,14 +106,17 @@ One module may correspond to one source file or a small collection of files.
 Group related operations by coherent responsibility, ownership and rules, rather
 than mechanically mapping directories or creating a module for every file.
 
-For each module, describe:
+After the shared opening, present:
 
-- **Inputs:** its input paths, what each accepts, where the input comes from,
-  and the result that path returns, including meaningful failure outcomes.
+- **Input paths:** name each meaningful path, its caller or trigger, the input
+  it accepts and the result it returns, including meaningful failure outcomes.
+  Use a short list or a table with Path, Input, Result and Caller columns.
 - **Processing:** the rules it preserves and how it coordinates objects, data,
   algorithms and other modules. Group related work into readable statements.
-- **Output:** the useful results and effects, linked back to the paths that
-  produce them and the flows that use them.
+- **Objects controlled:** the major objects it creates, owns or coordinates,
+  with links and an explanation of its responsibility for each.
+- **Outputs and effects:** shared results or effects worth explaining beyond the
+  individual input paths, linked to the flows that use them.
 
 A statement is a bullet explaining a meaningful step: what comes in, what is
 done and what goes out. Link an algorithm when it explains the step. Statements
@@ -98,6 +143,44 @@ implementation is scattered or poorly encapsulated. If a better grouping would
 serve the MeBasic structure, record the proposal in restructuring notes and
 identify it as a proposal, rather than claiming the source already has that design.
 
+After the shared opening, present:
+
+- **Example:** one concrete instance or situation that makes the object tangible.
+- **Attributes:** what it holds, explaining each attribute's meaning rather than
+  just its type. For example, "Health — how much damage the player can still
+  withstand."
+- **Behaviour:** the useful things it can do and how they affect its state.
+- **Ownership and lifecycle:** who creates or owns it, what it owns, and when it
+  is changed, completed or destroyed.
+- **Rules:** important conditions it preserves, such as health never falling
+  below zero, where supported by the project.
+- **Relationships:** linked objects and modules, explaining how they participate.
+
+For example, an illustrative object description begins like this; adapt the facts
+to the actual project rather than copying an invented game model:
+
+```markdown
+# Player
+
+Represents one participant in a match and tracks their progress.
+
+A Player holds the state that belongs to one participant for the duration of a
+match. It connects that participant's identity, current health and score so the
+match controller can apply actions and determine the outcome. Its state lasts
+until the match ends, when the results are recorded.
+
+## Example
+
+The participant you control during a match is one Player instance.
+
+## Attributes
+
+- **Health:** how much damage the player can still withstand.
+- **Score:** the points the player has earned in this match.
+```
+
+Continue with the applicable sections above and supporting source references.
+
 ### Flow
 
 Flow views the project as a factory: what comes in, how it is changed, and what
@@ -108,6 +191,15 @@ Identify the starting input or trigger, the transformations and decisions, and
 the useful output or failure outcome. For each stage, link the MeBasic modules
 and objects involved. Explain how information and responsibility pass between
 them so the reader can understand the whole process independently of file layout.
+
+After the shared opening, present:
+
+- **What comes in:** the starting input or trigger and any necessary conditions.
+- **Transformation steps:** a numbered sequence showing how input becomes output.
+  Each step states what changes and links the modules and objects involved.
+  Include meaningful branches or failure paths where they occur.
+- **What comes out:** the useful result, destination and observable outcome,
+  including how the flow ends when it cannot complete.
 
 ### Data
 
@@ -122,6 +214,16 @@ its representation and storage. A model can participate in both views. Link them
 and explain their different responsibilities. Data descriptions use the Datastore
 primitive and belong in `data/`.
 
+After the shared opening, present:
+
+- **Structure:** the meaningful records, fields or relationships and what they
+  represent; group detail around the information the reader needs to understand.
+- **Storage:** where the information lives and in what form.
+- **Readers and writers:** linked modules or objects that read, create or change it.
+- **Lifetime:** when it is created, how long it survives, and how it is removed.
+- **Loss and recovery:** relevant behaviour when information is missing, invalid
+  or unavailable, where supported by the project.
+
 ### Events
 
 Events are occurrences that trigger the application and the reactions they cause.
@@ -130,6 +232,13 @@ Identify the trigger, accompanying information, responding modules or objects,
 and observable result. Link the flow it starts or continues. Explain meaningful
 reactions rather than enumerating individual handler functions.
 
+After the shared opening, present:
+
+- **Trigger:** the occurrence that produces the event and where it originates.
+- **Information carried:** the meaningful information available to responders.
+- **Response:** the modules or objects that react and what they do.
+- **Outcome:** the observable result and links to flows started or continued.
+
 ### Algorithms
 
 Algorithms explain significant procedures used by modules and flows. Identify the
@@ -137,12 +246,31 @@ problem, inputs, important steps, result and limitations. Describe enough reason
 to understand the procedure, and link the concepts that use it; avoid translating
 implementation code line by line.
 
+After the shared opening, present:
+
+- **Problem:** what the procedure solves and why it is needed.
+- **Inputs:** the information and conditions it needs.
+- **Steps:** a numbered explanation of the significant decisions and transformations.
+- **Result:** what it produces, linking the modules or flows that use it.
+- **Limitations:** assumptions, tradeoffs and known cases it does not handle.
+
 ### Constraints
 
 Constraints describe rules the project must respect. Explain the rule, its origin
 and reason, its scope, and what happens when it cannot be met. Link affected
 concepts. Include accepted user instructions and corrections, and distinguish a
 requested rule from verified enforcement in the source.
+
+After the shared opening, present:
+
+- **Rule:** a direct statement of what must or must not happen.
+- **Reason and origin:** why it matters and the instruction, decision or external
+  requirement it comes from.
+- **Applies to:** linked concepts and the conditions under which the rule matters.
+- **Enforcement:** how the implementation currently upholds it, or an explicit
+  statement that enforcement is incomplete or unverified.
+- **When unmet:** the actual or required response when the rule cannot be met,
+  distinguishing observed behaviour from intent.
 
 ## Restructuring the project
 
@@ -312,11 +440,13 @@ Description files normally follow this order:
 1. **Front matter**, between `---` lines:
    - `title`: the human-readable name of what is described.
    - `summary`: one sentence, at most 160 characters.
-   - `description: >` followed by indented plain-word sentences.
+   - `description: >` followed by the one-paragraph introduction as indented text.
    - For a UI page, optional `screenshot: ui/screenshots/settings.png`, relative
      to `mebasic-src/`, pointing to an existing PNG/JPEG inside `ui/screenshots/`.
 2. **`# Title`**, matching the front-matter title.
-3. **The body**, explaining the concept using its collection guidance above.
+3. **The body**, beginning with the one-line summary and one-paragraph introduction,
+   matching the front matter, followed by the applicable category sections above.
+   This keeps the opening readable when metadata is hidden or displayed separately.
 4. **Bottom matter**, between `---` lines at the very end: `code:` followed by
    an indented YAML list of supporting implementation paths relative to the project
    root. Use `code: []` when implementation evidence is absent.
