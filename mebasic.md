@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 2
+  revision: 3
   updated: "2026-10-11"
-  summary: "Use the user-selected agent directly for generation and maintenance."
+  summary: "Define the generation kickoff prompt in IDE settings."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -506,15 +506,40 @@ without the architect's approval.
 
 ## IDE settings
 
-The terminal `ide_settings` mapping provides presentation metadata for consuming
-editors. `hidden_folders` lists folder names to omit from MeBasic navigation while
+The terminal `ide_settings` mapping provides presentation and generation settings for
+consuming editors. `hidden_folders` lists folder names to omit from MeBasic navigation while
 retaining their files for authoring. `folder_order` orders top-level collection
 folders; other folders follow in alphabetical order. Widgets and screenshots are
 shown under UI according to their on-disk placement. Editors choose their own
 controls and layout.
 
+`generation_prompt` is the actual kickoff message submitted to the user's current
+agent after the user approves generation or regeneration. Editors read this value
+from the current specification on each request; they must not hardcode, infer or
+silently substitute another kickoff prompt. If it is missing or unreadable, report
+the problem before starting generation. The prompt assumes the agent's working
+directory is `mebasic-src/`, with read access to the parent project and write access
+limited to `mebasic-src/`. Editors establish that context before submitting it.
+
 ---
 ide_settings:
+  generation_prompt: |-
+    The user has explicitly approved MeBasic generation or regeneration. Generate
+    the interpretation yourself in this turn, using the user-selected agent, model
+    and reasoning settings. Do not delegate or create a worker handoff.
+    Your working directory is mebasic-src; the project root is one directory above it.
+    Read the project-root AGENTS.md (or agents.md), applicable nested instructions
+    and their referenced guidance. Read .mebasic/mebasic.md and deeply understand
+    the project purpose, architecture and actual source before generating descriptions.
+    Read context/project-context.md if present and maintain it for future runs.
+    Preserve existing descriptions and user edits. Follow the current specification's
+    required collection hierarchy and use actual source to decide useful descriptions
+    within each category. Fill each collection with its own content as specified.
+    Review the interpretation for omissions and report unfinished work.
+    Use only real screenshots. All MeBasic writes, including private history and
+    baselines, must stay in this directory. Do not change implementation files.
+    The editor owns the project configuration file with the .mebasic extension;
+    never remove it or create another one.
   hidden_folders:
     - context
     - .mebasic
