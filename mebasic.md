@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 10
+  revision: 11
   updated: "2026-10-11"
-  summary: "Identify core application entry points and encapsulated submodules using their code names."
+  summary: "Keep module discovery project-independent and grounded in the target source."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -115,10 +115,10 @@ the module that owns the capability.
 
 If the core has multiple independently callable entry points, keep them as separate
 modules. Retain recognisable code names rather than replacing them with broad,
-invented summaries. For example, if `Map` and `OutputMap` are distinct core entry
-points in the source, describe **Map** and **OutputMap** separately and explain
-what each accepts, does and returns. These names are examples, not requirements
-for projects that do not contain them.
+invented summaries. For each entry point, explain what it accepts, does and
+returns. Discover names and boundaries from the project being described; do not
+carry over module names, categories of responsibility or architectural assumptions
+from another project.
 
 For each entry point, identify and link the submodules that carry out its work.
 Give each encapsulated submodule with a distinct responsibility its own module
