@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 4
+  revision: 5
   updated: "2026-10-11"
-  summary: "Offer preservation or explicitly approved fresh regeneration."
+  summary: "Define numbered architect statements and rulings with chat-driven constraints upkeep."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -42,8 +42,8 @@ unresolved questions from what exists today.
 
 ### Shared opening and reading pattern
 
-Every object, module, flow, UI page, widget, data description, event, algorithm
-and constraint has its own file. Do not combine unrelated items into a catalogue
+Every object, module, flow, UI page, widget, data description, event and algorithm
+has its own file. Constraints instead use the two numbered lists defined below. Do not combine unrelated items into a catalogue
 file. Begin every description with the same readable opening:
 
 1. **Name:** a clear, human-readable title identifying the item.
@@ -278,21 +278,54 @@ After the shared opening, present:
 
 ### Constraints
 
-Constraints describe rules the project must respect. Explain the rule, its origin
-and reason, its scope, and what happens when it cannot be met. Link affected
-concepts. Include accepted user instructions and corrections, and distinguish a
-requested rule from verified enforcement in the source.
+Constraints preserve what the architect has explicitly said and the limits that
+follow from it. They guide both the project and the AI building it. They are not
+an AI-generated catalogue of best practices or rules guessed from existing code.
+Use exactly two files in `mebasic-src/constraints/`:
 
-After the shared opening, present:
+- **`statements.md`:** significant things the architect has told us about this
+  project: decisions, instructions and corrections. Record their meaning faithfully
+  in simple English. Do not include assistant opinions, plans or results, passing
+  remarks, or questions that decide nothing. Treat a relayed review as a relayed
+  review, not an accepted instruction unless the architect accepts it.
+- **`rulings.md`:** things the project or its implementing AI must **not** do.
+  Derive these limits from the statements and cite the supporting statement
+  numbers. Mark inferred limits as inferred; never present them as the architect's
+  own words. Do not invent a prohibition that the statements do not support.
 
-- **Rule:** a direct statement of what must or must not happen.
-- **Reason and origin:** why it matters and the instruction, decision or external
-  requirement it comes from.
-- **Applies to:** linked concepts and the conditions under which the rule matters.
-- **Enforcement:** how the implementation currently upholds it, or an explicit
-  statement that enforcement is incomplete or unverified.
-- **When unmet:** the actual or required response when the rule cannot be met,
-  distinguishing observed behaviour from intent.
+Each file has front matter with `title` (Statements or Rulings) and a one-line
+`summary`, then a heading and a continuously numbered Markdown list, starting at
+`1.`. No introductory paragraph or per-rule sections are needed. Write one short point per entry, usually one
+sentence, with a compact date/source reference. Use actual increasing numbers,
+not repeated `1.` markers. Do not create a separate file or long explanation for
+each rule. If no entries are supported yet, leave the list empty and say so.
+
+For example, Statements might contain:
+
+1. Keep project data on the user's device. (Architect, 2026-10-11.)
+
+Rulings might contain:
+
+1. Do not upload project data to a remote service. (Inferred from statement 1.)
+
+On every project chat, apply the **mebasic-constraints** skill, especially when the
+architect corrects the AI. Check for significant new statements and their implied
+limits; append them in that same turn. The lists grow as decisions accumulate,
+not just when code changes. Do not duplicate an existing point or manufacture a
+new entry for every message. Read the current rulings before implementation.
+
+Keep earlier entries and stable numbers. A later explicit change gets a new entry
+identifying the statements or rulings it supersedes. Check each addition against
+both lists. If the architect's instructions appear contradictory and the intended
+replacement is unclear, show the relevant numbered points and ask one concise
+question. Do not silently choose, weaken or invent a compromise. Mark the issue
+unresolved and pause only work that depends on that decision. If the architect
+has already explicitly resolved it, record that resolution without asking again.
+
+Follow project opt-in and write permissions. Never create these files in an
+unregistered project merely because chat occurred. In a read-only conversation,
+raise contradictions and suggest entries without writing. Keep both lists concise;
+they record architectural intent, not proof of implementation or enforcement.
 
 ## Restructuring the project
 
@@ -405,10 +438,11 @@ or uncertain explanations instead of presenting guesses as facts.
   Preserve a requested behaviour as intent if the implementation does not yet
   match it, and explain the discrepancy. A description edit alone is not proof
   that the implementation changed or permission for unrelated code changes.
-- Record the user's project instructions and corrections in relevant files under
-  `mebasic-src/constraints/`, including their origin, scope and affected descriptions.
-  Merge related rules without losing earlier context; explicitly mark superseded
-  instructions. Keep requested rules distinguishable from verified enforcement.
+- Apply the constraints skill on every project chat, even when no coding or
+  description update is needed. Record significant architect instructions in
+  `constraints/statements.md` and supported prohibitions in `constraints/rulings.md`,
+  within `mebasic-src/`. Keep stable numbering, provenance and explicit supersession;
+  surface unresolved contradictions to the architect.
 - Keep an internal change record in `mebasic-src/.mebasic/change-history.jsonl` and a latest
   baseline index in `mebasic-src/.mebasic/change-state.json`. Retain exact baseline content
   under `mebasic-src/.mebasic/baselines/`. Record UTC time, actor (`user`, `llm` or `unknown`),
@@ -454,6 +488,8 @@ mebasic-src/
   events/
   algorithms/
   constraints/
+    statements.md
+    rulings.md
   context/
   .mebrain/                 # restructuring notes when needed
   .mebasic/                 # private authoring records
@@ -465,14 +501,17 @@ Subfolders may organise a collection's own descriptions without relocating anoth
 collection. These names and placements are required, not discretionary.
 
 If a description collection genuinely does not apply, retain its folder with a
-short Markdown explanation of why; never invent features to fill it. Screenshots
+short Markdown explanation of why; never invent features to fill it. For constraints,
+keep the two named lists and state when there are no supported entries. Screenshots
 are real PNG/JPEG captures in `ui/screenshots/` and may be absent. `context/`
 contains portable authoring memory, not user-facing descriptions. `.mebrain/`
 contains restructuring notes, and `.mebasic/` contains private history and baselines.
 
 Use one file per thing described, with a lowercase name and the primitive suffix:
 `_ui.md`, `_widget.md`, `_mod.md`, `_obj.md`, `_flow.md`, `_store.md`, `_event.md`,
-`_alg.md` or `_con.md`. Statements, when useful, stay within module descriptions.
+`_alg.md`. Constraints are the exception: use `statements.md` and `rulings.md`.
+Processing statements inside module descriptions are separate from the architect's
+Statements list.
 Do not add README or index descriptions: each description is its own read-me. The project entry point
 is `modules/project_mod.md`.
 
@@ -520,6 +559,10 @@ retaining their files for authoring. `folder_order` orders top-level collection
 folders; other folders follow in alphabetical order. Widgets and screenshots are
 shown under UI according to their on-disk placement. Editors choose their own
 controls and layout.
+`counted_lists` names description paths relative to `mebasic-src/` whose sidebar
+labels include their number of top-level numbered entries, such as Statements (12)
+and Rulings (8) when Constraints is expanded. Count entries, including superseded
+ones retained for history, not the highest number, examples or nested lists.
 
 `generation_prompt` is the actual kickoff message submitted to the user's current
 agent after the user approves generation or regeneration. Editors read this value
@@ -538,6 +581,9 @@ location contains unexpected files or redirects elsewhere, stop before deleting.
 
 ---
 ide_settings:
+  counted_lists:
+    - constraints/statements.md
+    - constraints/rulings.md
   generation_prompt: |-
     The user has explicitly approved MeBasic generation or regeneration. Generate
     the interpretation yourself in this turn, using the user-selected agent, model

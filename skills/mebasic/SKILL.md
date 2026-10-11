@@ -13,6 +13,10 @@ Check for a valid `mebasic-src/<name>.mebasic` configuration. Without it, do not
 opening a folder or coding is not consent. Initial generation and retries require
 explicit approval; only ready projects receive automatic maintenance.
 
+On every project chat, also apply [mebasic-constraints](../mebasic-constraints/SKILL.md)
+for significant architect statements, derived prohibitions and contradictions, even
+when the description update below is skipped.
+
 After coding, decide whether the interpretation changed meaningfully:
 - Skip when descriptions remain accurate, including trivial edits and internal refactors.
 - Otherwise update affected descriptions and necessary links before your final reply.
