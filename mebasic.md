@@ -48,8 +48,9 @@ file. Begin every description with the same readable opening:
    relates to the larger picture. Assume the reader has not read the source code.
 
 Follow this opening with the category sections below. Use the given section names
-and order as reading templates; omit sections that add no useful information
-rather than padding them with empty headings. Keep explanations short and concrete.
+and order as reading templates; modules use the flexible service-contract guidance
+below. Omit sections that add no useful information rather than padding them with
+empty headings. Keep explanations short and concrete.
 Use bullets for parallel facts, numbered steps for sequences, and tables when they
 make inputs, attributes or relationships easier to compare. Do not list functions,
 method signatures or incidental implementation details.
@@ -96,34 +97,51 @@ After the shared opening, present:
 
 ### Modules
 
-Modules are the controllers of the application. Think of a module as an API with
-meaningful input paths: each path receives some input, performs a responsibility
-and returns a result. These paths can originate in UI actions, events, other
-modules or external systems; they need not be network endpoints.
+Think of a module description as a microservice or API specification: it explains
+what a coherent part of the application offers to its callers and what they can
+rely on. Modules organise controller responsibilities around meaningful capabilities,
+with a clear boundary, purpose and public contract.
 
-Determine controller boundaries by deeply understanding how the project works.
-One module may correspond to one source file or a small collection of files.
-Group related operations by coherent responsibility, ownership and rules, rather
-than mechanically mapping directories or creating a module for every file.
+Find these boundaries by deeply understanding the project. Group capabilities
+that belong together through responsibility, ownership and rules. A module may
+be implemented by one file or a small collection of files. Its boundary is logical:
+it does not require a separate process, deployment or network API. Describe actual
+interfaces and interactions; do not invent HTTP endpoints or a microservice
+architecture for a project that does not have them.
 
-After the shared opening, present:
+Keep the shared name, one-line summary and introductory paragraph. Then organise
+the description around the capabilities the module exposes, in whatever layout
+makes its contract clearest. Short operation sections, examples, prose or a table
+can all work. There are no mandatory module headings, column names or section
+order after the opening.
 
-- **Input paths:** name each meaningful path, its caller or trigger, the input
-  it accepts and the result it returns, including meaningful failure outcomes.
-  Use a short list or a table with Path, Input, Result and Caller columns.
-- **Processing:** the rules it preserves and how it coordinates objects, data,
-  algorithms and other modules. Group related work into readable statements.
-- **Objects controlled:** the major objects it creates, owns or coordinates,
-  with links and an explanation of its responsibility for each.
-- **Outputs and effects:** shared results or effects worth explaining beyond the
-  individual input paths, linked to the flows that use them.
+Help the reader understand:
 
-A statement is a bullet explaining a meaningful step: what comes in, what is
-done and what goes out. Link an algorithm when it explains the step. Statements
-stay within modules; they are not individual functions or separate files.
+- What responsibility the module owns, the capabilities it offers, and who uses
+  them. Explain boundaries with neighbouring modules where that clarifies ownership.
+- For each meaningful operation or input path, what the caller asks for or sends,
+  what result or effect to expect, and the conditions and failures that matter.
+  A response can be immediate, an event or later work; describe the actual behaviour.
+- Relevant promises and rules: for example, whether an operation changes stored
+  state, requires permission or can be repeated safely. Include these only when
+  they help explain this module's real contract.
+- The objects, data and other modules it owns or depends on, linked where they
+  explain how to use the capability or understand its effects.
+
+These are questions to answer, not fields to fill. Describe meaningful public
+capabilities rather than listing every function or method signature. Explain
+internal processing only when needed to understand an observable result or rule;
+link algorithms and flows for deeper detail. Brief statements can explain useful
+steps inside the description without becoming a required processing inventory.
+
+For example, a document service might offer Open, Save and Watch for changes.
+Its Save description would explain the document and destination it accepts,
+what successful saving means, how conflicts are reported, and any resulting
+notification. This illustrates a contract; use the capabilities and behaviour
+actually supported by the project.
 
 `modules/project_mod.md` introduces the whole project's purpose, users, main
-concepts and controller groups, linking to their descriptions.
+concepts and service responsibilities, linking to their descriptions.
 
 ### Objects
 
@@ -429,8 +447,8 @@ contains restructuring notes, and `.mebasic/` contains private history and basel
 
 Use one file per thing described, with a lowercase name and the primitive suffix:
 `_ui.md`, `_widget.md`, `_mod.md`, `_obj.md`, `_flow.md`, `_store.md`, `_event.md`,
-`_alg.md` or `_con.md`. Statements are bullets within modules. Do not add README
-or index descriptions: each description is its own read-me. The project entry point
+`_alg.md` or `_con.md`. Statements, when useful, stay within module descriptions.
+Do not add README or index descriptions: each description is its own read-me. The project entry point
 is `modules/project_mod.md`.
 
 ## File format
