@@ -48,7 +48,8 @@ user edits and implementation locations; and maintains private history and
 baselines under `mebasic-src/.mebasic/`. Every MeBasic write stays inside
 `mebasic-src/`; source elsewhere is read-only evidence. Initial generation must inspect actual source and
 create every exact top-level folder required by the current specification and fill
-each description category with its own content. Folder names and placement are
+each description category with its own content. Use `data/` for datastore descriptions, not `datastores/`; keep worker context
+out of the user-facing sidebar. Folder names and placement are
 mandatory, not discretionary: never put other categories under modules. Use
 judgment for the explanations inside each category; document genuine inapplicability
 rather than inventing features. In approved regeneration, correct earlier AI nesting

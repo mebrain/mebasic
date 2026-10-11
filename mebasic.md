@@ -78,7 +78,7 @@ Ordinary source edits requested by the user are separate from MeBasic maintenanc
     algorithms/
     constraints/
     ui/
-    datastores/
+    data/
     widgets/
     events/
     screenshots/
@@ -88,12 +88,17 @@ Ordinary source edits requested by the user are separate from MeBasic maintenanc
   This is the MeBasic method, not a suggestion. Do not rename, merge, omit or nest
   these top-level folders under another category. In particular, `modules/objects/`,
   `modules/flow/` and `modules/ui/` are not substitutes for the required folders.
+  The storage-description folder is named `data/`, not `datastores/`. Datastore
+  descriptions use this folder and retain their `_store.md` suffix. During approved
+  regeneration, correct any older `datastores/` naming and repair its links.
   Populate each description category with its own source-grounded content as
   defined below: modules contain modules, objects contain objects, and so on.
   If the project has no applicable concept for a category, keep that folder and
   include a short Markdown explanation of why it does not apply; never invent
   program features to fill it. `screenshots/` contains only real available UI
   captures and may remain empty; `context/` contains the portable project context.
+  Always hide `context/` from the MeBasic sidebar; it is worker memory, not a
+  user-facing description category. The worker must still read and maintain it.
   Subfolders may group descriptions within their correct category but must not
   relocate another category beneath it.
 - During explicitly approved regeneration, correct earlier AI-created nesting
