@@ -191,7 +191,7 @@ After the shared opening, present:
 
 - **Example:** one concrete instance or situation that makes the object tangible.
 - **Attributes:** what it holds, explaining each attribute's meaning rather than
-  just its type. For example, "Health â€” how much damage the player can still
+  just its type. For example, "Health — how much damage the player can still
   withstand."
 - **Behaviour:** the useful things it can do and how they affect its state.
 - **Ownership and lifecycle:** who creates or owns it, what it owns, and when it
@@ -655,7 +655,7 @@ consuming editors. `hidden_folders` lists folder names to omit from MeBasic navi
 retaining their files for authoring. `folder_order` orders top-level collection
 folders; other folders follow in alphabetical order. Widgets and screenshots are
 shown under UI according to their on-disk placement. Editors choose their own
-controls and layout.
+controls and layout.-
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
 labels include their number of top-level numbered entries, such as Architect Said (12)
 and Disallowed (8) when Constraints is expanded. Count entries, including superseded
