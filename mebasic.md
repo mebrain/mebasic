@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 1
+  revision: 2
   updated: "2026-10-11"
-  summary: "Introduce structured specification versioning."
+  summary: "Use the user-selected agent directly for generation and maintenance."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -317,7 +317,7 @@ Keep reusable understanding in `mebasic-src/context/project-context.md`. Before
 initial generation, regeneration or maintenance, read this file if it exists.
 If it is absent, build the understanding from project guidance and actual source,
 then create it. Update it before finishing each generation or meaningful maintenance
-run so a fresh worker can continue across authoring sessions and project moves.
+run so the user's agent can continue across authoring sessions and project moves.
 
 Use concise prose to capture project purpose, architecture, important concepts and
 relationships, accepted decisions and terminology, relevant source locations,
@@ -332,6 +332,19 @@ files and corrections; update stale facts rather than carrying them forward.
 Preserve user edits and record disagreements instead of overwriting them silently.
 All context writes stay inside `mebasic-src/context/`. Continuity lives with the
 project and does not depend on a particular authoring session or model provider.
+
+## Agent and model choice
+
+The user's current agent generates and maintains MeBasic directly, using the
+model and reasoning settings the user selected. When no model is selected,
+use that agent's normal configured default. Keep the available conversation
+context and the portable project context when continuing the work.
+
+Do not delegate MeBasic generation, regeneration or maintenance to a separate
+agent, external worker or cheaper model. MeBasic does not prescribe a model or
+change the user's selection. Complete any needed description updates as part of
+the same task, before the agent's final response. If the agent cannot complete
+that work, explain what remains; do not silently substitute another agent.
 
 ## Generating an interpretation
 
