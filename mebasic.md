@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 12
+  revision: 13
   updated: "2026-10-12"
-  summary: "UI pages list their widgets and sketch their layout; only reusable widgets get files in ui/widgets/."
+  summary: "Group specialised modules in a folder beside their broader module, linked by a parent field."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -181,6 +181,34 @@ Its Save description would explain the document and destination it accepts,
 what successful saving means, how conflicts are reported, and any resulting
 notification. This illustrates a contract; use the capabilities and behaviour
 actually supported by the project.
+
+#### Specialised modules
+
+When several modules are more specific versions of one broader concept, describe
+the broader concept as its own module and group the specialisations in a folder
+beside it, named after it. For example, if the project has `Robot` with the
+specialisations `MovingRobot` and `FlyingRobot`:
+
+```text
+modules/
+  robot_mod.md
+  robot/
+    moving_robot_mod.md
+    flying_robot_mod.md
+```
+
+Each specialisation keeps its own file and its code name, and its front matter
+names the broader module in `parent`. The broader module explains what all its
+specialisations share, such as the common contract, rules and responsibilities,
+and links each specialisation. A specialisation describes what it adds or changes
+and links back to the broader module rather than repeating it. Specialisations
+of a specialisation nest the same way, one folder level per step.
+
+Group modules this way only when the source supports the relationship, for example
+through inheritance, implementations of a shared interface, or variants of one
+role. A similar name alone is not enough, and a submodule that merely helps
+another stays a sibling with links. Keep the broader module where existing links
+already point; adding a specialisation must not move it.
 
 `modules/project_mod.md` introduces the whole project's purpose, users, main
 concepts and service responsibilities, linking to their descriptions.
@@ -613,7 +641,9 @@ Each description collection contains its own source-grounded content. The
 top-level siblings. `ui/widgets/` holds only reusable widgets; page-specific widgets
 are described in their page's `_ui.md` file.
 Subfolders may organise a collection's own descriptions without relocating another
-collection. These names and placements are required, not discretionary.
+collection. In `modules/`, a subfolder holds the specialisations of the module
+file beside it with the same name, as described under Specialised modules.
+These names and placements are required, not discretionary.
 
 If a description collection genuinely does not apply, retain its folder with a
 short Markdown explanation of why; never invent features to fill it. For constraints,
@@ -640,6 +670,8 @@ Description files normally follow this order:
    - `description: >` followed by the one-paragraph introduction as indented text.
    - For a UI page, optional `screenshot: ui/screenshots/settings.png`, relative
      to `mebasic-src/`, pointing to an existing PNG/JPEG inside `ui/screenshots/`.
+   - For a specialised module, `parent: modules/robot_mod.md`, relative to
+     `mebasic-src/`, pointing to the broader module it specialises.
 2. **`# Title`**, matching the front-matter title.
 3. **The body**, beginning with the one-line summary and one-paragraph introduction,
    matching the front matter, followed by the applicable category sections above.
@@ -672,8 +704,10 @@ The terminal `ide_settings` mapping provides presentation and generation setting
 consuming editors. `hidden_folders` lists folder names to omit from MeBasic navigation while
 retaining their files for authoring. `folder_order` orders top-level collection
 folders; other folders follow in alphabetical order. Widgets and screenshots are
-shown under UI according to their on-disk placement. Editors choose their own
-controls and layout.-
+shown under UI according to their on-disk placement. A folder of specialised
+modules is shown as its broader module: one sidebar entry with the broader
+module's title, in that module's place, whose children are the broader module
+followed by its specialisations. Editors choose their own controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
 labels include their number of top-level numbered entries, such as Architect Said (12)
 and Disallowed (8) when Constraints is expanded. Count entries, including superseded
