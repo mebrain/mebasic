@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 17
+  revision: 18
   updated: "2026-10-12"
-  summary: "Every module lists its entry points in an API section that editors extract and display."
+  summary: "Plain language with context, consistent titles and Markdown headings, follow the project's folders, no moved stubs."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -22,6 +22,11 @@ provider or implementation layout. It does not define how the program runs.
 
 Start with what the project does, who uses it, and its main concepts. Explain
 purpose and useful behaviour first, then let links lead to deeper detail.
+
+Always write in simple, plain language for a reader who is new to the project and
+may not be a programmer. Use short sentences and everyday words. When a technical
+term is needed, explain it in a few words the first time it appears. Prefer a
+concrete example to an abstract definition.
 Descriptions operate above individual functions: explain responsibilities,
 relationships and journeys, without inventories of functions or call signatures.
 The collection structure is mandatory; prose within it is flexible.
@@ -32,6 +37,15 @@ existing portable context, documentation, relevant implementation and tests.
 Develop a deep understanding of purpose, architecture, responsibilities and actual
 behaviour. Names and folder listings alone are not enough. If there are no agent
 instructions, study project documentation and source directly.
+
+Also read the project's existing folder structure as evidence of how its authors
+organised the code. Folders often group related concepts on purpose, for example
+`sensors/` holding several sensor types, or `payments/` holding everything about
+payment. Where a folder reflects such a meaningful grouping, mirror it: use a
+subfolder of the same name within the matching collection, or a broader module
+with its specialisations, and let it inform the creation hierarchy where the code
+confirms it. Do not copy purely technical folders such as `src/`, `lib/`, `build/`
+or `test/`, and do not let source folders override the collection structure below.
 
 ## Collections: meaning and generation
 
@@ -47,10 +61,24 @@ algorithm has its own file. A widget used on only one page is described inside t
 page instead (see Widgets). Constraints instead use the two numbered lists defined below. Do not combine unrelated items into a catalogue
 file. Begin every description with the same readable opening:
 
-1. **Name:** a clear, human-readable title identifying the item.
+1. **Name:** a clear, human-readable title identifying the item, as a `#` heading.
 2. **One-line summary:** one succinct sentence saying what it does or represents.
 3. **One paragraph:** explain why it exists, its role in the project and how it
    relates to the larger picture. Assume the reader has not read the source code.
+   Give enough context that the reader understands where the item fits in the
+   whole application: which part of the user's work it serves, what uses it and
+   what it relies on.
+
+Write titles consistently. A title that is a code name keeps the code's exact
+spelling, such as `GridSensor` or `HttpApp`. Any other title uses title case, with
+each main word capitalised, such as `Order Processing` or `Project Overview`.
+Never write a title all in lowercase or all in capitals unless the code name is
+written that way. Every description has a `title` in its front matter, so editors
+never fall back to the lowercase filename.
+
+Use Markdown headings for structure: one `#` heading for the title, `##` for each
+section and `###` beneath a section. Do not use bold text, underlined text or
+setext-style `===`/`---` lines as headings, and do not skip heading levels.
 
 Follow this opening with the category sections below. Use the given section names
 and order as reading templates; modules use the flexible service-contract guidance
@@ -189,15 +217,20 @@ it does not require a separate process, deployment or network API. Describe actu
 interfaces and interactions; do not invent HTTP endpoints or a microservice
 architecture for a project that does not have them.
 
-Keep the shared name, one-line summary and introductory paragraph. Then organise
-the description around the capabilities the module exposes, in whatever layout
-makes its contract clearest. Short operation sections, examples, prose or a table
-can all work. Apart from the API section below, there are no mandatory module
-headings, column names or section order after the opening.
+Every module starts with the shared name, one-line summary and introductory
+paragraph. The introduction says what the module does and how it fits into the
+whole application, in simple words, before any detail: what part of the
+application it serves, which modules or screens use it, and what it relies on.
+Only then comes the API section, followed by the rest of the description organised
+around the capabilities the module exposes, in whatever layout makes its contract
+clearest. Short operation sections, examples, prose or a table can all work.
+Apart from the API section, there are no mandatory module headings, column names
+or section order after the opening.
 
 #### API section
 
-Every module has a section headed exactly `## API`. It lists the entry points
+Every module has a section headed exactly `## API`, placed straight after the
+introduction and before any other section. It lists the entry points
 through which other parts of the project call into the module: the public
 functions, methods, commands, routes, messages or events it accepts from outside.
 Leave out internal helpers and anything only the module itself calls. Editors
@@ -646,6 +679,13 @@ or uncertain explanations instead of presenting guesses as facts.
 - Carry user renames, terminology changes and changed concepts into all affected
   `mebasic-src/` descriptions and links, whether the change came from an edited file,
   implementation change or conversation. Do not silently restore an old name.
+- When a description is moved, renamed, merged or split, move the file itself
+  and update every link to it. Never leave the old file behind as a stub, a
+  redirect, or with a label such as "(moved)", "moved to", "deprecated" or
+  "renamed" in its title or text. Carry any human-authored text and its
+  attribution into the new file before removing the old one, and record the
+  move in the change history rather than in the descriptions. Readers should
+  only ever see current descriptions.
   Preserve a requested behaviour as intent if the implementation does not yet
   match it, and explain the discrepancy. A description edit alone is not proof
   that the implementation changed or permission for unrelated code changes.
@@ -711,8 +751,11 @@ Each description collection contains its own source-grounded content. The
 top-level siblings. `ui/widgets/` holds only reusable widgets; page-specific widgets
 are described in their page's `_ui.md` file.
 Subfolders may organise a collection's own descriptions without relocating another
-collection. In `modules/`, a subfolder holds the specialisations of the module
-file beside it with the same name, as described under Specialised modules.
+collection, and should follow meaningful groupings in the project's own folders
+(see Purpose). Subfolder names are lowercase like the collections. In `modules/`, a
+subfolder with a module file of the same name beside it holds that module's
+specialisations, as described under Specialised modules; any other subfolder is a
+plain grouping.
 These names and placements are required, not discretionary.
 
 If a description collection genuinely does not apply, retain its folder with a
