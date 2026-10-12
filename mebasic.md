@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 13
+  revision: 14
   updated: "2026-10-12"
-  summary: "Group specialised modules in a folder beside their broader module, linked by a parent field."
+  summary: "Check GitHub for a newer specification revision before every generation."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -478,6 +478,14 @@ the same task, before the agent's final response. If the agent cannot complete
 that work, explain what remains; do not silently substitute another agent.
 
 ## Generating an interpretation
+
+Before every generation, check the published specification at
+`https://raw.githubusercontent.com/mebrain/mebasic/main/mebasic.md`. If its
+`version.revision` is higher than the project's copy in `mebasic-src/.mebasic/mebasic.md`,
+replace that copy and generate with the newer revision. Never replace a copy with a
+lower or equal revision, since an equal revision may hold the architect's local edits.
+If the check fails, for example offline, continue with the newest local copy and say
+which revision was used.
 
 After explicit user approval, understand the project as described above, create the
 required folder structure, and populate each category with its own source-grounded
