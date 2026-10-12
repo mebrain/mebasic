@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 18
+  revision: 20
   updated: "2026-10-12"
-  summary: "Plain language with context, consistent titles and Markdown headings, follow the project's folders, no moved stubs."
+  summary: "Titles are single PascalCase names; code_name, entry_point, entry_methods and abstraction front matter."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -69,12 +69,17 @@ file. Begin every description with the same readable opening:
    whole application: which part of the user's work it serves, what uses it and
    what it relies on.
 
-Write titles consistently. A title that is a code name keeps the code's exact
-spelling, such as `GridSensor` or `HttpApp`. Any other title uses title case, with
-each main word capitalised, such as `Order Processing` or `Project Overview`.
-Never write a title all in lowercase or all in capitals unless the code name is
-written that way. Every description has a `title` in its front matter, so editors
-never fall back to the lowercase filename.
+Write every title the same way, in PascalCase, the casing MeBasic uses for all
+names: one word with each part starting with a capital and no spaces, dots or
+underscores, such as `OrderProcessing` or `ProjectOverview`. Convert a code name to
+this form: `memory_store` becomes `MemoryStore`, `app.completion` becomes
+`AppCompletion`, and `GridSensor` stays `GridSensor`. Never start a title with a
+lowercase letter or write it all in capitals; write acronyms as one capital
+followed by lowercase letters inside a name, such as `HttpApp` or `ApiGateway`.
+When the code name differs from the title, record it in the front matter as
+`code_name` and mention it in the opening so readers can find it in the source.
+Every description has a `title` in its front matter, so editors never fall back to
+the lowercase filename.
 
 Use Markdown headings for structure: one `#` heading for the title, `##` for each
 section and `###` beneath a section. Do not use bold text, underlined text or
@@ -251,6 +256,28 @@ results and failures elsewhere in the description where they matter. Indented
 bullets under an entry may add short notes. Order entries the way a caller meets
 them, most important first. A module with no outside callers keeps the heading with
 the line `No entry points: only this module calls its code.` and no bullets.
+
+Name the module's general entry points in the front matter as `entry_methods`: the
+one to three API entries that callers normally use first or most, through which
+the rest of the module is usually reached. Use names exactly as they appear in the
+API section. Editors list these first and mark them as entry points.
+
+#### Application entry points
+
+Identify the application's very first entry points: where the program starts
+running or is first called from outside. Typically this is the App module holding
+`main` or the web server start-up, plus any separately started process, command-line
+command, scheduled job or service the outside world calls first. Mark each of these
+modules with `entry_point: true` in the front matter. A small application usually
+has one; do not mark ordinary modules that are only reached through others.
+
+#### Base types and interfaces
+
+When a module or object describes an interface, an abstract class, or a base class
+that several others inherit from or implement, record that in the front matter as
+`abstraction: interface`, `abstraction: abstract` or `abstraction: base`. Its
+description explains the shared contract and links the types built on it. Editors
+show these with a distinct icon.
 
 Help the reader understand:
 
@@ -788,6 +815,11 @@ Description files normally follow this order:
    - For a module or object in the creation hierarchy, `hierarchy: 2`, a positive
      integer, and below hierarchy 1, `created_by: modules/car_mod.md`, relative to
      `mebasic-src/`, pointing to the description of the concept that creates it.
+   - `code_name`, the exact name in the source, when it differs from the title.
+   - For a module, `entry_methods: [Evaluate]`, its general entry points, and
+     `entry_point: true` when it is one of the application's first entry points.
+   - For a module or object, `abstraction: interface`, `abstract` or `base` when
+     it is a shared type that others implement or inherit from.
 2. **`# Title`**, matching the front-matter title.
 3. **The body**, beginning with the one-line summary and one-paragraph introduction,
    matching the front matter, followed by the applicable category sections above.
@@ -827,8 +859,10 @@ followed by its specialisations. Within one folder, a description whose `created
 is in the same folder is shown nested under its creator as a tree, with connecting
 lines and a control to collapse or expand what each concept creates. Expanding a
 module also lists the entry points from its API section, each marked as a callable
-entry, and choosing one opens the module at that entry. Editors choose their own
-controls and layout.
+entry, and choosing one opens the module at that entry. Hovering an entry shows its
+one-sentence description. Application entry points and a module's `entry_methods`
+are listed first and labelled "Entry Point", and `abstraction` types get their own
+icon. Editors choose their own controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
 labels include their number of top-level numbered entries, such as Architect Said (12)
 and Disallowed (8) when Constraints is expanded. Count entries, including superseded
