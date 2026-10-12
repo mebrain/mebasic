@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 11
-  updated: "2026-10-11"
-  summary: "Keep module discovery project-independent and grounded in the target source."
+  revision: 12
+  updated: "2026-10-12"
+  summary: "UI pages list their widgets and sketch their layout; only reusable widgets get files in ui/widgets/."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -42,8 +42,9 @@ unresolved questions from what exists today.
 
 ### Shared opening and reading pattern
 
-Every object, module, flow, UI page, widget, data description, event and algorithm
-has its own file. Constraints instead use the two numbered lists defined below. Do not combine unrelated items into a catalogue
+Every object, module, flow, UI page, reusable widget, data description, event and
+algorithm has its own file. A widget used on only one page is described inside that
+page instead (see Widgets). Constraints instead use the two numbered lists defined below. Do not combine unrelated items into a catalogue
 file. Begin every description with the same readable opening:
 
 1. **Name:** a clear, human-readable title identifying the item.
@@ -78,18 +79,33 @@ date when useful; omit the reference when no verified image is available.
 After the shared opening, present:
 
 - **Screenshot:** the real page capture when available, with a useful caption.
+- **Sketch:** a small ASCII sketch, in a `text` code block, of how the page looks:
+  its main regions and where each widget sits, labelled with the widget names used
+  below. The page that frames the whole application sketches the overall app
+  window. Draw the actual arrangement, not a proposal; keep it schematic, not
+  pixel-accurate. It complements a screenshot and is still required when none exists.
 - **Purpose:** the task the user comes here to accomplish.
 - **Actions:** what the user can do and the result of each action; link events
   or flows where useful.
 - **Feedback and states:** meaningful loading, empty, success and error states
   that actually exist, and how the user can respond.
-- **Widgets:** the meaningful components of the page, linked to their own files.
+- **Widgets:** a listing of every meaningful widget on the page, with a short note
+  on its role here. Link reusable widgets to their files in `ui/widgets/`. Describe
+  a page-specific widget directly in this listing: what it shows and what users can
+  do with it. It gets no file of its own.
 
 ### Widgets
 
-Widgets are the smaller, ideally reusable parts of UI pages. Group by meaningful
-UI responsibility, not every visual component or implementation class. Each widget
-has its own description inside UI and links back to its containing pages.
+Widgets are the smaller parts of UI pages. Group by meaningful UI responsibility,
+not every visual component or implementation class. Only REUSABLE widgets get their
+own description: one that is used on more than one page, or that the implementation
+deliberately provides as a shared component. These files live in the `ui/widgets/`
+subfolder and link back to the pages that contain them.
+
+A widget that is not reusable is simply listed, and described, in the page it is
+created on; do not give it a file in `ui/widgets/`. When a page-specific widget
+becomes reused, move its description into its own widget file and link it from each
+page. When a reusable widget is left on only one page, fold it back into that page.
 
 After the shared opening, present:
 
@@ -575,8 +591,8 @@ project root. Create the following exact lowercase folders and hierarchy:
 ```text
 mebasic-src/
   <name>.mebasic
-  ui/
-    widgets/
+  ui/                       # one _ui.md per page
+    widgets/                # reusable widgets only
     screenshots/
   modules/
   objects/
@@ -592,8 +608,10 @@ mebasic-src/
   .mebasic/                 # private authoring records
 ```
 
-Each description collection contains its own source-grounded content. Widgets
-and screenshots are inside `ui/`; the other collections are top-level siblings.
+Each description collection contains its own source-grounded content. The
+`widgets/` and `screenshots/` subfolders are inside `ui/`; the other collections are
+top-level siblings. `ui/widgets/` holds only reusable widgets; page-specific widgets
+are described in their page's `_ui.md` file.
 Subfolders may organise a collection's own descriptions without relocating another
 collection. These names and placements are required, not discretionary.
 
@@ -605,8 +623,8 @@ contains portable authoring memory, not user-facing descriptions. `.mebrain/`
 contains restructuring notes, and `.mebasic/` contains private history and baselines.
 
 Use one file per thing described, with a lowercase name and the primitive suffix:
-`_ui.md`, `_widget.md`, `_mod.md`, `_obj.md`, `_flow.md`, `_store.md`, `_event.md`,
-`_alg.md`. Constraints are the exception: use `architect_said.md` and `disallowed.md`.
+`_ui.md`, `_widget.md` (reusable widgets in `ui/widgets/` only), `_mod.md`, `_obj.md`,
+`_flow.md`, `_store.md`, `_event.md`, `_alg.md`. Constraints are the exception: use `architect_said.md` and `disallowed.md`.
 Processing statements inside module descriptions are separate from the architect's
 Architect Said list.
 Do not add README or index descriptions: each description is its own read-me. The project entry point
