@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 20
+  revision: 21
   updated: "2026-10-12"
-  summary: "Titles are single PascalCase names; code_name, entry_point, entry_methods and abstraction front matter."
+  summary: "Modules list Internal Functions below the API; the overview file is titled Overview - <project> and comes first."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -226,20 +226,26 @@ Every module starts with the shared name, one-line summary and introductory
 paragraph. The introduction says what the module does and how it fits into the
 whole application, in simple words, before any detail: what part of the
 application it serves, which modules or screens use it, and what it relies on.
-Only then comes the API section, followed by the rest of the description organised
-around the capabilities the module exposes, in whatever layout makes its contract
-clearest. Short operation sections, examples, prose or a table can all work.
-Apart from the API section, there are no mandatory module headings, column names
-or section order after the opening.
+Only then come the API and Internal Functions sections, followed by the rest of the
+description organised around the capabilities the module exposes, in whatever
+layout makes its contract clearest. Short operation sections, examples, prose or a
+table can all work. Apart from these two sections, there are no mandatory module
+headings, column names or section order after the opening.
 
-#### API section
+#### API and Internal Functions sections
 
 Every module has a section headed exactly `## API`, placed straight after the
 introduction and before any other section. It lists the entry points
 through which other parts of the project call into the module: the public
 functions, methods, commands, routes, messages or events it accepts from outside.
-Leave out internal helpers and anything only the module itself calls. Editors
-extract this list, so each entry keeps one fixed shape:
+
+Directly below it comes a section headed exactly `## Internal Functions`. It lists
+the module's own significant functions that only the module itself calls, such as
+helpers that do a meaningful step of its work. Leave out trivial helpers. A module
+whose internal functions add nothing worth naming leaves this section out.
+
+Never list the same function in both sections. Editors extract both lists, so each
+entry keeps one fixed shape:
 
 ```markdown
 ## API
@@ -247,6 +253,10 @@ extract this list, so each entry keeps one fixed shape:
 - `Evaluate` — Calculates the current expression and returns its value.
 - `CreateVar` — Defines a named variable that later expressions can use.
 - `POST /orders` — Accepts a new order and replies with its number.
+
+## Internal Functions
+
+- `Tokenize` — Splits an expression into numbers, names and operators.
 ```
 
 Each entry is one top-level bullet. It starts with the entry point's name exactly as
@@ -333,7 +343,10 @@ another stays a sibling with links. Keep the broader module where existing links
 already point; adding a specialisation must not move it.
 
 `modules/project_mod.md` introduces the whole project's purpose, users, main
-concepts and service responsibilities, linking to their descriptions.
+concepts and service responsibilities, linking to their descriptions. It is the
+overview file and always comes first: its title is exactly `Overview - ` followed by
+the project's name, such as `Overview - Hegemonikon`. This is the one title that
+does not follow the PascalCase rule. Editors list it first among the modules.
 
 ### Objects
 
@@ -859,8 +872,9 @@ followed by its specialisations. Within one folder, a description whose `created
 is in the same folder is shown nested under its creator as a tree, with connecting
 lines and a control to collapse or expand what each concept creates. Expanding a
 module also lists the entry points from its API section, each marked as a callable
-entry, and choosing one opens the module at that entry. Hovering an entry shows its
-one-sentence description. Application entry points and a module's `entry_methods`
+entry, and choosing one opens the module at that entry. Its internal functions
+follow the API entries, marked with a padlock. Hovering an entry shows its
+one-sentence description. The overview file is listed first among the modules. Application entry points and a module's `entry_methods`
 are listed first and labelled "Entry Point", and `abstraction` types get their own
 icon. Editors choose their own controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
