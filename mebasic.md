@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 15
+  revision: 17
   updated: "2026-10-12"
-  summary: "Record the creation hierarchy with hierarchy and created_by front-matter fields."
+  summary: "Every module lists its entry points in an API section that editors extract and display."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -58,7 +58,8 @@ below. Omit sections that add no useful information rather than padding them wit
 empty headings. Keep explanations short and concrete.
 Use bullets for parallel facts, numbered steps for sequences, and tables when they
 make inputs, attributes or relationships easier to compare. Do not list functions,
-method signatures or incidental implementation details.
+method signatures or incidental implementation details; a module's API section,
+which names its entry points, is the one exception.
 
 Link related descriptions where they are discussed so readers can move between
 views naturally. Keep supporting source references at the bottom. Clearly label
@@ -150,6 +151,22 @@ in the code. Trace past process startup, GUI windows and UI event handlers to th
 core heart of the application; a UI class or `main` function is not automatically
 the module that owns the capability.
 
+#### The App module
+
+Application plumbing always belongs in one module, `modules/app_mod.md`, titled
+App. Plumbing is the code that starts, wires and hosts the application rather
+than providing its capabilities: `main` and other process entry points,
+`Application` or `App` classes, HTTP or web app setup such as an `HttpApp`, server
+or framework bootstrap, routing tables, dependency wiring, configuration loading,
+and startup and shutdown. Describe all of it together in the App module, and never
+split any of it into standalone modules, however many files or classes it spans.
+
+The App module explains how the application starts, what it creates and connects,
+how it is hosted and configured, and how it shuts down, linking the core modules it
+starts or hands requests to. This fixed name is a deliberate exception to taking
+module names from the project. The core capabilities themselves keep their own
+modules; do not merge them into App because App starts them.
+
 If the core has multiple independently callable entry points, keep them as separate
 modules. Retain recognisable code names rather than replacing them with broad,
 invented summaries. For each entry point, explain what it accepts, does and
@@ -175,8 +192,32 @@ architecture for a project that does not have them.
 Keep the shared name, one-line summary and introductory paragraph. Then organise
 the description around the capabilities the module exposes, in whatever layout
 makes its contract clearest. Short operation sections, examples, prose or a table
-can all work. There are no mandatory module headings, column names or section
-order after the opening.
+can all work. Apart from the API section below, there are no mandatory module
+headings, column names or section order after the opening.
+
+#### API section
+
+Every module has a section headed exactly `## API`. It lists the entry points
+through which other parts of the project call into the module: the public
+functions, methods, commands, routes, messages or events it accepts from outside.
+Leave out internal helpers and anything only the module itself calls. Editors
+extract this list, so each entry keeps one fixed shape:
+
+```markdown
+## API
+
+- `Evaluate` — Calculates the current expression and returns its value.
+- `CreateVar` — Defines a named variable that later expressions can use.
+- `POST /orders` — Accepts a new order and replies with its number.
+```
+
+Each entry is one top-level bullet. It starts with the entry point's name exactly as
+callers use it in the source, in backticks, then ` — ` and one sentence saying what
+calling it does. Use the name only, without parameter lists or types; explain inputs,
+results and failures elsewhere in the description where they matter. Indented
+bullets under an entry may add short notes. Order entries the way a caller meets
+them, most important first. A module with no outside callers keeps the heading with
+the line `No entry points: only this module calls its code.` and no bullets.
 
 Help the reader understand:
 
@@ -191,8 +232,8 @@ Help the reader understand:
 - The objects, data and other modules it owns or depends on, linked where they
   explain how to use the capability or understand its effects.
 
-These are questions to answer, not fields to fill. Describe meaningful public
-capabilities rather than listing every function or method signature. Explain
+These are questions to answer, not fields to fill. Outside the API section, describe
+meaningful public capabilities rather than listing every function or method signature. Explain
 internal processing only when needed to understand an observable result or rule;
 link algorithms and flows for deeper detail. Brief statements can explain useful
 steps inside the description without becoming a required processing inventory.
@@ -741,8 +782,10 @@ modules is shown as its broader module: one sidebar entry with the broader
 module's title, in that module's place, whose children are the broader module
 followed by its specialisations. Within one folder, a description whose `created_by`
 is in the same folder is shown nested under its creator as a tree, with connecting
-lines and a control to collapse or expand what each concept creates. Editors choose
-their own controls and layout.
+lines and a control to collapse or expand what each concept creates. Expanding a
+module also lists the entry points from its API section, each marked as a callable
+entry, and choosing one opens the module at that entry. Editors choose their own
+controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
 labels include their number of top-level numbered entries, such as Architect Said (12)
 and Disallowed (8) when Constraints is expanded. Count entries, including superseded
