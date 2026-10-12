@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 14
+  revision: 15
   updated: "2026-10-12"
-  summary: "Check GitHub for a newer specification revision before every generation."
+  summary: "Record the creation hierarchy with hierarchy and created_by front-matter fields."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -64,6 +64,27 @@ Link related descriptions where they are discussed so readers can move between
 views naturally. Keep supporting source references at the bottom. Clearly label
 proposed improvements and link relevant restructuring notes; do not present them
 as implemented behaviour. The file-format section below defines the metadata.
+
+### Creation hierarchy
+
+The creation hierarchy records who creates what, and at what depth. A concept that
+nothing else in the project creates is at hierarchy 1. A concept created by a
+hierarchy 1 concept is at hierarchy 2, and so on. For example, if a `Car`
+instantiates an `Engine` and the engine instantiates `Pistons`, then Car is 1,
+Engine is 2 and Pistons is 3.
+
+Record this in the front matter of modules and objects: `hierarchy` gives the depth,
+and `created_by` names the description of the concept that creates it. Leave
+`created_by` out at hierarchy 1. When several concepts create the same one, name
+the creator that owns its lifetime, usually the one that keeps it, and give the
+depth through that creator. Leave both fields out when the source does not create
+the concept at runtime, such as a stateless helper or a static library.
+
+The hierarchy is separate from folders. Folders group related concepts, such as a
+broader module and its specialisations; the hierarchy follows creation, which can
+cross folders and collections. A specialisation keeps its own place in the
+hierarchy. Base both fields on construction actually found in the source, not on
+names or on which file mentions which.
 
 ### UI pages
 
@@ -680,6 +701,9 @@ Description files normally follow this order:
      to `mebasic-src/`, pointing to an existing PNG/JPEG inside `ui/screenshots/`.
    - For a specialised module, `parent: modules/robot_mod.md`, relative to
      `mebasic-src/`, pointing to the broader module it specialises.
+   - For a module or object in the creation hierarchy, `hierarchy: 2`, a positive
+     integer, and below hierarchy 1, `created_by: modules/car_mod.md`, relative to
+     `mebasic-src/`, pointing to the description of the concept that creates it.
 2. **`# Title`**, matching the front-matter title.
 3. **The body**, beginning with the one-line summary and one-paragraph introduction,
    matching the front matter, followed by the applicable category sections above.
@@ -715,7 +739,10 @@ folders; other folders follow in alphabetical order. Widgets and screenshots are
 shown under UI according to their on-disk placement. A folder of specialised
 modules is shown as its broader module: one sidebar entry with the broader
 module's title, in that module's place, whose children are the broader module
-followed by its specialisations. Editors choose their own controls and layout.
+followed by its specialisations. Within one folder, a description whose `created_by`
+is in the same folder is shown nested under its creator as a tree, with connecting
+lines and a control to collapse or expand what each concept creates. Editors choose
+their own controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
 labels include their number of top-level numbered entries, such as Architect Said (12)
 and Disallowed (8) when Constraints is expanded. Count entries, including superseded
