@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 26
+  revision: 28
   updated: "2026-10-13"
-  summary: "Flow traces configured stages as boxes, shows switched-off stages, self-checks granularity and is traced afresh."
+  summary: "Flow adds a backwards pass from the flow files to the modules; editors step into switched-off stages."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -40,7 +40,7 @@ instructions, study project documentation and source directly.
 
 Also read the project's existing folder structure as evidence of how its authors
 organised the code. Folders often group related concepts on purpose, for example
-`sensors/` holding several sensor types, or `payments/` holding everything about
+`shapes/` holding several kinds of shape, or `payments/` holding everything about
 payment. Where a folder reflects such a meaningful grouping, mirror it: use a
 subfolder of the same name within the matching collection, or a broader module
 with its specialisations, and let it inform the creation hierarchy where the code
@@ -73,8 +73,8 @@ file. Begin every description with the same readable opening:
 Write every title the same way, in PascalCase, the casing MeBasic uses for all
 names: one word with each part starting with a capital and no spaces, dots or
 underscores, such as `OrderProcessing` or `ProjectOverview`. Convert a code name to
-this form: `memory_store` becomes `MemoryStore`, `app.completion` becomes
-`AppCompletion`, and `GridSensor` stays `GridSensor`. Never start a title with a
+this form: `order_store` becomes `OrderStore`, `report.export` becomes
+`ReportExport`, and `InvoiceBuilder` stays `InvoiceBuilder`. Never start a title with a
 lowercase letter or write it all in capitals; write acronyms as one capital
 followed by lowercase letters inside a name, such as `HttpApp` or `ApiGateway`.
 When the code name differs from the title, record it in the front matter as
@@ -346,7 +346,7 @@ already point; adding a specialisation must not move it.
 `modules/project_mod.md` introduces the whole project's purpose, users, main
 concepts and service responsibilities, linking to their descriptions. It is the
 overview file and always comes first: its title is exactly `Overview - ` followed by
-the project's name, such as `Overview - Hegemonikon`. This is the one title that
+the project's name, such as `Overview - PaintLine`. This is the one title that
 does not follow the PascalCase rule. Editors list it first among the modules.
 
 ### Objects
@@ -441,18 +441,18 @@ Build the flow in this order:
    from where it enters to where its useful result or failure ends up, noting each
    place where it is processed separately and something distinct happens to it.
    Those places are the boxes. Follow the data into configuration as well as code:
-   when stages are defined in data, such as a list of layers, a pipeline definition,
-   a rule table or a chain of handlers read from a file, each configured stage the
+   when stages are defined in data, such as a pipeline definition, a list of
+   processing steps, a rule table or a chain of handlers read from a file, each configured stage the
    data passes through is a place of its own, even though one generic engine runs
    them all. Record only the big moves: leave out trivial functions, helpers, simple
    pass-throughs and plumbing. The flow documents the shape of the work, not every
    call; it is not exhaustive.
-3. **Make boxes per step, not per class, module or area.** A box is one separate
+3. **Make boxes per step, not per class, module or component.** A box is one separate
    piece of processing that does something distinct, not a class, module, object
    type or grouping. If one class is created five times and the data passes through
-   each instance separately for a different purpose, that is five boxes. A stack of
-   configured stages inside one area or component is one box per stage, not one box
-   for the area. If the same code runs repeatedly doing the same thing, that is one
+   each instance separately for a different purpose, that is five boxes. A series of
+   configured stages inside one component is one box per stage, not one box for the
+   component. If the same code runs repeatedly doing the same thing, that is one
    box that the data reaches again.
 4. **Show switched-off stages.** When the design includes stages the data would
    pass through but configuration or a setting currently switches them off, keep
@@ -468,6 +468,25 @@ Build the flow in this order:
    reveals better boundaries: one module doing two distinct steps, or two modules
    doing one. When it does, adjust the module descriptions and carry the change into
    every affected description and link, as for any rename or move.
+
+7. **Make a backwards pass over the modules.** Once the flow files are written,
+   start from them and work back to the modules, asking whether the modules
+   represent the project's organisation as well as the flow shows it could be:
+   - a module named by several unrelated boxes may be doing several jobs and
+     should be split;
+   - a step that needs several modules, or several modules that always appear
+     together, may be one responsibility and should be merged or grouped;
+   - stages that are variants of one step may belong to a broader module with
+     specialisations, or in one folder;
+   - a module no input ever reaches is either plumbing that belongs in App, a
+     helper too small to be a module, or a sign that an input is missing;
+   - a module or box whose name does not say what the data experiences there
+     should be renamed.
+   Make the adjustments to the module descriptions that these questions support,
+   carry them into every affected description and into the flow files, and run the
+   checks in step 5 again. When a better organisation would need the source code
+   itself to change, record it in `.mebrain/restructuring.md` instead of
+   describing the code as if it already worked that way.
 
 Trace the flow afresh from the source each time the flow is generated or
 regenerated, and whenever this section changes. Do not build it by converting
@@ -532,8 +551,8 @@ failed check, list that box again as a later step. Every step's box must exist i
 note saying the data would be changed there if the stage were on, and no details.
 Editors lay each pathway out from these steps and draw a line for each move
 between consecutive steps, so no positions or links are needed. They show off
-stages greyed and dashed with an Off label, and the timeline passes over them,
-because the data does not reach them today.
+stages greyed and dashed with an Off label; the timeline still steps into them, so
+the reader sees where the data would go and that the stage is switched off.
 
 `flow/inputs.md` is shared with the user and shown under the flow diagram:
 
