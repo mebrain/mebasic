@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 21
-  updated: "2026-10-12"
-  summary: "Modules list Internal Functions below the API; the overview file is titled Overview - <project> and comes first."
+  revision: 22
+  updated: "2026-10-13"
+  summary: "Flow is two JSON files: the boxes data passes through and how each independent data piece moves."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -56,9 +56,10 @@ unresolved questions from what exists today.
 
 ### Shared opening and reading pattern
 
-Every object, module, flow, UI page, reusable widget, data description, event and
+Every object, module, UI page, reusable widget, data description, event and
 algorithm has its own file. A widget used on only one page is described inside that
-page instead (see Widgets). Constraints instead use the two numbered lists defined below. Do not combine unrelated items into a catalogue
+page instead (see Widgets). Constraints instead use the two numbered lists defined below,
+and Flow uses two JSON files (see Flow). Do not combine unrelated items into a catalogue
 file. Begin every description with the same readable opening:
 
 1. **Name:** a clear, human-readable title identifying the item, as a `#` heading.
@@ -406,23 +407,97 @@ Continue with the applicable sections above and supporting source references.
 
 ### Flow
 
-Flow views the project as a factory: what comes in, how it is changed, and what
-comes out. It sits above code structure and follows a meaningful journey through
-the application, rather than reproducing its call graph.
+Flow views the project as a factory: what data comes in, how it is changed, and
+what comes out. When it is done, a reader has a clear picture of what data the
+application receives and how that data moves through the system. Flow is the one
+collection that is not Markdown: it is exactly two JSON files, `flow/boxes.json`
+for the places data can pass through and `flow/data.json` for how each piece of data
+actually moves. Editors draw them as a diagram with a history timeline.
 
-Identify the starting input or trigger, the transformations and decisions, and
-the useful output or failure outcome. For each stage, link the MeBasic modules
-and objects involved. Explain how information and responsibility pass between
-them so the reader can understand the whole process independently of file layout.
+Build the flow in this order:
 
-After the shared opening, present:
+1. **Find the independent data pieces.** Identify every distinct kind of data the
+   code processes that comes from outside it, such as an uploaded document, a typed
+   command, a sensor reading or a scheduled tick. Define each one by what the data
+   is, not by how it arrives. When the same data can come in through two routes,
+   such as an HTTP API and a command line, it is one input: ignore the plumbing and
+   describe the data. These become the `inputs`.
+2. **Trace each piece through the modules.** Follow the piece from where it enters
+   to where its useful result or failure ends up, noting each place where it is
+   processed separately and something distinct happens to it. Those places are the
+   boxes. Record only the big moves: leave out trivial functions, helpers, simple
+   pass-throughs and plumbing. The flow documents the shape of the work, not every
+   call; it is not exhaustive.
+3. **Make boxes per step, not per class.** A box is one separate piece of
+   processing that does something distinct, not a class or object type. If one
+   class is created five times and the data passes through each instance separately
+   for a different purpose, that is five boxes. If the same code runs repeatedly
+   doing the same thing, that is one box, with a link to itself when it repeats.
+4. **Adjust the modules when the flow shows they are wrong.** Tracing the data often
+   reveals better boundaries: one module doing two distinct steps, or two modules
+   doing one. When it does, adjust the module descriptions and carry the change into
+   every affected description and link, as for any rename or move.
 
-- **What comes in:** the starting input or trigger and any necessary conditions.
-- **Transformation steps:** a numbered sequence showing how input becomes output.
-  Each step states what changes and links the modules and objects involved.
-  Include meaningful branches or failure paths where they occur.
-- **What comes out:** the useful result, destination and observable outcome,
-  including how the flow ends when it cannot complete.
+`flow/boxes.json` lists the inputs, the boxes and the numbered links between boxes:
+
+```json
+{
+  "title": "ReviewFlow",
+  "inputs": [
+    {"id": "agent-edit", "title": "AgentEdit", "enters": "edit",
+     "description": "A change the assistant makes to a file."}
+  ],
+  "boxes": [
+    {"id": "edit", "kind": "External", "title": "AgentEdit", "module": "modules/app_mod.md",
+     "details": ["0 edits waiting"], "column": 0, "row": 0},
+    {"id": "admission", "kind": "Decision", "title": "Admission", "module": "modules/admission_mod.md",
+     "details": ["Items 0/3"], "column": 1, "row": 0}
+  ],
+  "links": [
+    {"number": 1, "from": "edit", "to": "admission"}
+  ]
+}
+```
+
+- `inputs`: one per independent data piece, with `enters` naming the first box it
+  reaches and a one-sentence `description` of what the data is.
+- `boxes`: `id`, `kind`, `title`, `module` (the description of the module that does
+  this step, relative to `mebasic-src/`), `details` (up to four short lines about
+  what the box holds or decides when idle), and a grid position `column` and `row`
+  starting at 0. Use `kind` `State` for where data waits, `Decision` where it is
+  checked or routed, `Effect` where it changes something outside, and `External`
+  for work done outside the project; combine two with `+`, such as `Decision + State`.
+  Titles follow the PascalCase title rule.
+- `links`: the moves between boxes, numbered from 1 in the order a reader meets them.
+  Optional `style: "dotted"` marks a weaker or indirect move, `route: "top"` or
+  `"bottom"` sends a long link around the boxes along a lane, `lane` sets how far
+  below the boxes a bottom lane runs, and `offset` shifts where the link meets its
+  target to keep lines apart. A link from a box to itself draws a loop.
+
+Lay the grid out so it reads left to right and top to bottom: inputs toward the top
+left, results toward the bottom right, linked boxes near each other and few
+crossing lines.
+
+`flow/data.json` follows example pieces of data through the boxes, one or more for
+each input, so a reader can watch real-looking data move:
+
+```json
+{
+  "pieces": [
+    {"id": "edit-parser", "input": "agent-edit", "title": "Edit to parser.cpp", "steps": [
+      {"box": "edit", "at": 1, "note": "Edit received"},
+      {"box": "admission", "at": 4, "note": "Admitted within capacity", "details": ["Items 1/3"]}
+    ]}
+  ]
+}
+```
+
+Each piece names its `input` and gives its `steps` in order: the `box` it reaches,
+a time `at` that places the step on the shared timeline, a plain-language `note`
+saying what happens to the data there, and optional `details` showing what the box
+holds at that moment. Choose `at` values so pieces that overlap in real use overlap
+on the timeline. Every step's box and every move between consecutive steps should
+exist in `boxes.json`.
 
 ### Data
 
@@ -774,7 +849,7 @@ mebasic-src/
     screenshots/
   modules/
   objects/
-  flow/
+  flow/                     # boxes.json and data.json
   data/
   events/
   algorithms/
@@ -807,7 +882,9 @@ contains restructuring notes, and `.mebasic/` contains private history and basel
 
 Use one file per thing described, with a lowercase name and the primitive suffix:
 `_ui.md`, `_widget.md` (reusable widgets in `ui/widgets/` only), `_mod.md`, `_obj.md`,
-`_flow.md`, `_store.md`, `_event.md`, `_alg.md`. Constraints are the exception: use `architect_said.md` and `disallowed.md`.
+`_store.md`, `_event.md`, `_alg.md`. Constraints are the exception: use `architect_said.md` and `disallowed.md`.
+Flow is the other exception: `flow/` holds only `boxes.json` and `data.json`. Fold any
+older `_flow.md` descriptions into them and remove those files.
 Processing statements inside module descriptions are separate from the architect's
 Architect Said list.
 Do not add README or index descriptions: each description is its own read-me. The project entry point
@@ -876,7 +953,8 @@ entry, and choosing one opens the module at that entry. Its internal functions
 follow the API entries, marked with a padlock. Hovering an entry shows its
 one-sentence description. The overview file is listed first among the modules. Application entry points and a module's `entry_methods`
 are listed first and labelled "Entry Point", and `abstraction` types get their own
-icon. Editors choose their own controls and layout.
+icon. The flow collection has no entries of its own in navigation: choosing it opens
+the flow diagram drawn from `flow/boxes.json` and `flow/data.json`. Editors choose their own controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
 labels include their number of top-level numbered entries, such as Architect Said (12)
 and Disallowed (8) when Constraints is expanded. Count entries, including superseded
