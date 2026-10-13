@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 22
+  revision: 26
   updated: "2026-10-13"
-  summary: "Flow is two JSON files: the boxes data passes through and how each independent data piece moves."
+  summary: "Flow traces configured stages as boxes, shows switched-off stages, self-checks granularity and is traced afresh."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -59,7 +59,7 @@ unresolved questions from what exists today.
 Every object, module, UI page, reusable widget, data description, event and
 algorithm has its own file. A widget used on only one page is described inside that
 page instead (see Widgets). Constraints instead use the two numbered lists defined below,
-and Flow uses two JSON files (see Flow). Do not combine unrelated items into a catalogue
+and Flow uses its own fixed files (see Flow). Do not combine unrelated items into a catalogue
 file. Begin every description with the same readable opening:
 
 1. **Name:** a clear, human-readable title identifying the item, as a `#` heading.
@@ -410,94 +410,156 @@ Continue with the applicable sections above and supporting source references.
 Flow views the project as a factory: what data comes in, how it is changed, and
 what comes out. When it is done, a reader has a clear picture of what data the
 application receives and how that data moves through the system. Flow is the one
-collection that is not Markdown: it is exactly two JSON files, `flow/boxes.json`
-for the places data can pass through and `flow/data.json` for how each piece of data
-actually moves. Editors draw them as a diagram with a history timeline.
+collection with a fixed set of files: `flow/boxes.json` for the kinds of data that
+come in and the places data can pass through, `flow/data.json` for how one example
+of each kind moves step by step, and `flow/inputs.md`, a Markdown list of the
+discovered inputs that the user extends with requests and notes. Each kind of
+data is shown on its own: choosing it in the editor draws only its pathway, and a
+timeline walks that one piece of data through it, showing how it is transformed at
+each step. Kinds of data can share boxes and then diverge; each pathway is still
+drawn separately.
+
+For example, a paint line takes a `Bucket` through BucketReader, ItemPositioner,
+BucketPainter, ItemQC and Deposit, and a `Can` through ItemPositioner, CanPainter,
+CanStencil, ItemQC and Deposit. Bucket and Can are the two inputs; both pass
+through ItemPositioner, ItemQC and Deposit, but each is viewed as its own pathway.
 
 Build the flow in this order:
 
+0. **Read `flow/inputs.md` first.** Its `## Requests` section lists kinds of data the
+   user wants shown as their own inputs, and `## Notes` holds the user's own thoughts
+   about the flow. Treat both as instructions for this generation: for example, a
+   request for `Color` means colour should become an input with its own pathway when
+   the code processes colours. Never rewrite or remove the user's requests or notes.
 1. **Find the independent data pieces.** Identify every distinct kind of data the
    code processes that comes from outside it, such as an uploaded document, a typed
    command, a sensor reading or a scheduled tick. Define each one by what the data
    is, not by how it arrives. When the same data can come in through two routes,
    such as an HTTP API and a command line, it is one input: ignore the plumbing and
    describe the data. These become the `inputs`.
-2. **Trace each piece through the modules.** Follow the piece from where it enters
-   to where its useful result or failure ends up, noting each place where it is
-   processed separately and something distinct happens to it. Those places are the
-   boxes. Record only the big moves: leave out trivial functions, helpers, simple
+2. **Trace each piece through the code and its configuration.** Follow the piece
+   from where it enters to where its useful result or failure ends up, noting each
+   place where it is processed separately and something distinct happens to it.
+   Those places are the boxes. Follow the data into configuration as well as code:
+   when stages are defined in data, such as a list of layers, a pipeline definition,
+   a rule table or a chain of handlers read from a file, each configured stage the
+   data passes through is a place of its own, even though one generic engine runs
+   them all. Record only the big moves: leave out trivial functions, helpers, simple
    pass-throughs and plumbing. The flow documents the shape of the work, not every
    call; it is not exhaustive.
-3. **Make boxes per step, not per class.** A box is one separate piece of
-   processing that does something distinct, not a class or object type. If one
-   class is created five times and the data passes through each instance separately
-   for a different purpose, that is five boxes. If the same code runs repeatedly
-   doing the same thing, that is one box, with a link to itself when it repeats.
-4. **Adjust the modules when the flow shows they are wrong.** Tracing the data often
+3. **Make boxes per step, not per class, module or area.** A box is one separate
+   piece of processing that does something distinct, not a class, module, object
+   type or grouping. If one class is created five times and the data passes through
+   each instance separately for a different purpose, that is five boxes. A stack of
+   configured stages inside one area or component is one box per stage, not one box
+   for the area. If the same code runs repeatedly doing the same thing, that is one
+   box that the data reaches again.
+4. **Show switched-off stages.** When the design includes stages the data would
+   pass through but configuration or a setting currently switches them off, keep
+   them in the pathway in their designed place and mark their boxes `off`, with a
+   short `offReason` naming where they are switched off. Describe what the data
+   does today faithfully: off stages are shown, never presented as running.
+5. **Check every box before finishing.** Ask of each box: does it hide several
+   distinct transformations, for example a note that needs "and" to say what
+   happens, or a box whose module runs a list of configured stages? If so, split it.
+   Then ask whether a reader could follow each input from entry to result without
+   reading the source. If not, the flow is still too coarse.
+6. **Adjust the modules when the flow shows they are wrong.** Tracing the data often
    reveals better boundaries: one module doing two distinct steps, or two modules
    doing one. When it does, adjust the module descriptions and carry the change into
    every affected description and link, as for any rename or move.
 
-`flow/boxes.json` lists the inputs, the boxes and the numbered links between boxes:
+Trace the flow afresh from the source each time the flow is generated or
+regenerated, and whenever this section changes. Do not build it by converting
+older flow descriptions or by keeping earlier boxes unexamined: earlier versions
+are drafts to check against the source, not a starting structure.
+
+`flow/boxes.json` lists the inputs and every box any of them passes through:
 
 ```json
 {
-  "title": "ReviewFlow",
+  "title": "PaintLine",
   "inputs": [
-    {"id": "agent-edit", "title": "AgentEdit", "enters": "edit",
-     "description": "A change the assistant makes to a file."}
+    {"id": "bucket", "title": "Bucket", "enters": "bucket-reader",
+     "description": "A bucket to be painted and stored."}
   ],
   "boxes": [
-    {"id": "edit", "kind": "External", "title": "AgentEdit", "module": "modules/app_mod.md",
-     "details": ["0 edits waiting"], "column": 0, "row": 0},
-    {"id": "admission", "kind": "Decision", "title": "Admission", "module": "modules/admission_mod.md",
-     "details": ["Items 0/3"], "column": 1, "row": 0}
-  ],
-  "links": [
-    {"number": 1, "from": "edit", "to": "admission"}
+    {"id": "bucket-reader", "kind": "External", "title": "BucketReader",
+     "modules": ["modules/bucket_reader_mod.md"], "details": ["Waiting for buckets"]},
+    {"id": "bucket-painter", "kind": "Effect", "title": "BucketPainter",
+     "modules": ["modules/bucket_painter_mod.md", "modules/paint_store_mod.md"], "details": ["Paint ready"]},
+    {"id": "bucket-varnish", "kind": "Effect", "title": "BucketVarnisher",
+     "modules": ["modules/bucket_painter_mod.md"], "details": ["Clear varnish coat"],
+     "off": true, "offReason": "Switched off in paint_line.json"}
   ]
 }
 ```
 
-- `inputs`: one per independent data piece, with `enters` naming the first box it
-  reaches and a one-sentence `description` of what the data is.
-- `boxes`: `id`, `kind`, `title`, `module` (the description of the module that does
-  this step, relative to `mebasic-src/`), `details` (up to four short lines about
-  what the box holds or decides when idle), and a grid position `column` and `row`
-  starting at 0. Use `kind` `State` for where data waits, `Decision` where it is
-  checked or routed, `Effect` where it changes something outside, and `External`
-  for work done outside the project; combine two with `+`, such as `Decision + State`.
-  Titles follow the PascalCase title rule.
-- `links`: the moves between boxes, numbered from 1 in the order a reader meets them.
-  Optional `style: "dotted"` marks a weaker or indirect move, `route: "top"` or
-  `"bottom"` sends a long link around the boxes along a lane, `lane` sets how far
-  below the boxes a bottom lane runs, and `offset` shifts where the link meets its
-  target to keep lines apart. A link from a box to itself draws a loop.
+- `inputs`: one per independent kind of data, titled by what the data is, with
+  `enters` naming the first box it reaches and a short one-sentence `description`
+  of what the data is, which editors show when the input is chosen.
+- `boxes`: `id`, `kind`, `title`, `modules` (the descriptions of the modules that
+  carry out this step, relative to `mebasic-src/`, the main one first) and `details`
+  (up to three short lines about what the box holds when no data is there). Use `kind` `State` for where data
+  waits, `Decision` where it is checked or routed, `Effect` where it changes
+  something, and `External` for work done outside the project; combine two with
+  `+`, such as `Decision + State`. Titles follow the PascalCase title rule. A stage
+  that is designed but currently switched off has `"off": true` and an `offReason`.
 
-Lay the grid out so it reads left to right and top to bottom: inputs toward the top
-left, results toward the bottom right, linked boxes near each other and few
-crossing lines.
-
-`flow/data.json` follows example pieces of data through the boxes, one or more for
-each input, so a reader can watch real-looking data move:
+`flow/data.json` follows one realistic example of each input through its boxes, so a
+reader can watch that piece of data being transformed:
 
 ```json
 {
   "pieces": [
-    {"id": "edit-parser", "input": "agent-edit", "title": "Edit to parser.cpp", "steps": [
-      {"box": "edit", "at": 1, "note": "Edit received"},
-      {"box": "admission", "at": 4, "note": "Admitted within capacity", "details": ["Items 1/3"]}
+    {"id": "red-bucket", "input": "bucket", "title": "A 10-litre bucket to paint red", "steps": [
+      {"box": "bucket-reader", "note": "The bucket is read from the intake line",
+       "details": ["Bucket: 10 L", "Colour: unpainted"]},
+      {"box": "bucket-painter", "note": "Two coats of red paint are applied",
+       "details": ["Colour: red", "Coats: 2"]}
     ]}
   ]
 }
 ```
 
-Each piece names its `input` and gives its `steps` in order: the `box` it reaches,
-a time `at` that places the step on the shared timeline, a plain-language `note`
-saying what happens to the data there, and optional `details` showing what the box
-holds at that moment. Choose `at` values so pieces that overlap in real use overlap
-on the timeline. Every step's box and every move between consecutive steps should
-exist in `boxes.json`.
+Give exactly one piece for each input. Its `steps` are in the order the data
+reaches them: the `box`, a plain-language `note` of one or two short sentences
+saying what happens to the data there (editors show it beside the box on the
+diagram), and `details` describing the data as it is after that step, so the
+reader sees it change. When the data goes back to an earlier box, for example after a
+failed check, list that box again as a later step. Every step's box must exist in
+`boxes.json`. List switched-off stages as steps in their designed place, with a
+note saying the data would be changed there if the stage were on, and no details.
+Editors lay each pathway out from these steps and draw a line for each move
+between consecutive steps, so no positions or links are needed. They show off
+stages greyed and dashed with an Off label, and the timeline passes over them,
+because the data does not reach them today.
+
+`flow/inputs.md` is shared with the user and shown under the flow diagram:
+
+```markdown
+# Flow inputs
+
+## Discovered inputs
+
+- **Bucket** — A bucket to be painted and stored.
+- **Can** — A can to be painted, stencilled and stored.
+
+## Requests
+
+- Color
+
+## Notes
+
+Paint mixing matters more than storage; show it in detail.
+```
+
+Generation owns `## Discovered inputs`: keep it matching the `inputs` in
+`boxes.json`, one bullet each with the title in bold and the one-sentence
+description. When a request cannot become an input, for example because the code
+never handles that data, add a bullet under `## Discovered inputs` saying so in plain
+words. The user owns `## Requests` and `## Notes`: preserve them exactly. Create the
+file with all three headings when it does not exist.
 
 ### Data
 
@@ -849,7 +911,7 @@ mebasic-src/
     screenshots/
   modules/
   objects/
-  flow/                     # boxes.json and data.json
+  flow/                     # boxes.json, data.json and inputs.md
   data/
   events/
   algorithms/
@@ -883,8 +945,9 @@ contains restructuring notes, and `.mebasic/` contains private history and basel
 Use one file per thing described, with a lowercase name and the primitive suffix:
 `_ui.md`, `_widget.md` (reusable widgets in `ui/widgets/` only), `_mod.md`, `_obj.md`,
 `_store.md`, `_event.md`, `_alg.md`. Constraints are the exception: use `architect_said.md` and `disallowed.md`.
-Flow is the other exception: `flow/` holds only `boxes.json` and `data.json`. Fold any
-older `_flow.md` descriptions into them and remove those files.
+Flow is the other exception: `flow/` holds only `boxes.json`, `data.json` and
+`inputs.md`. Remove any older `_flow.md` descriptions; the flow is traced afresh
+from the source rather than converted from them.
 Processing statements inside module descriptions are separate from the architect's
 Architect Said list.
 Do not add README or index descriptions: each description is its own read-me. The project entry point
@@ -954,7 +1017,8 @@ follow the API entries, marked with a padlock. Hovering an entry shows its
 one-sentence description. The overview file is listed first among the modules. Application entry points and a module's `entry_methods`
 are listed first and labelled "Entry Point", and `abstraction` types get their own
 icon. The flow collection has no entries of its own in navigation: choosing it opens
-the flow diagram drawn from `flow/boxes.json` and `flow/data.json`. Editors choose their own controls and layout.
+the flow diagram drawn from `flow/boxes.json` and `flow/data.json`, with `flow/inputs.md`
+below it for the user to add requests and notes. Editors choose their own controls and layout.
 `counted_lists` names description paths relative to `mebasic-src/` whose sidebar
 labels include their number of top-level numbered entries, such as Architect Said (12)
 and Disallowed (8) when Constraints is expanded. Count entries, including superseded
