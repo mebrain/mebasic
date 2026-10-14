@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 29
+  revision: 30
   updated: "2026-10-14"
-  summary: "Adds a Writing style section, the module sections What it does, Vocabulary and Where it happens, and lets corrected or unpinned text lose human attribution."
+  summary: "What it does becomes a step-by-step walk through the module's work, and Where it happens now comes before Vocabulary."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -124,8 +124,9 @@ Follow this opening with the category sections below. Use the given section name
 and order as reading templates; modules use the fixed sections and service-contract
 guidance described under Modules. Write every section as the Writing style section
 describes. Do not list functions, method signatures or incidental implementation
-details; a module's API and Internal Functions sections, which name its entry points
-and significant internal functions, are the one exception.
+details. A module's API and Internal Functions sections, which name its entry points
+and significant internal functions, are the exception, and its What it does steps may
+name the function or module where a step happens so the reader can find it.
 
 Link related descriptions where they are discussed so readers can move between
 views naturally. Keep supporting source references at the bottom. Clearly label
@@ -269,14 +270,37 @@ always knows where to look:
    below.
 3. **`## Internal Functions`.** The module's own significant functions, as described
    below. Leave it out when nothing is worth naming.
-4. **`## What it does`.** A list that walks through what the module actually does,
-   step by step, in the order it happens. Write each step as one plain sentence that
-   anyone could follow, such as "It checks that the order has at least one item, and
-   refuses it with a message if it does not." Describe the real behaviour found in the
-   source, not the names of the functions that carry it out. Number the steps when
-   they always happen in that order; use plain bullets when the module offers several
-   separate jobs, and give each job its own short run of steps.
-5. **`## Vocabulary`.** An explanation of every word in this description that a newcomer
+4. **`## What it does`.** A numbered, step-by-step walk through the work this
+   module does, in the order it happens. This is not a summary of the module's
+   purpose, which the overview already gives. Follow one request or piece of data from
+   the moment it enters the module to the moment its result leaves: name the entry
+   point it arrives through, each check or decision it meets, what happens on each
+   branch, where another module or function does part of the work, and where the
+   result goes at the end. Write each step as one plain sentence that anyone could
+   follow, and name the function or module where the step happens when that helps the
+   reader find it in the source. For example, a module that paints buckets might read:
+
+   ```markdown
+   ## What it does
+
+   1. The caller sends in a bucket, which enters through the `receive_bucket` function.
+   2. We check whether the bucket has already been painted.
+   3. If it has not been painted, we look up the correct colour for this kind of bucket.
+   4. We paint the bucket, which happens in the [Painter](painter_mod.md) module.
+   5. We drop the bucket into the bucket dispatch, which sends it on to storage.
+   ```
+
+   Describe the real behaviour found in the source, including the order of the steps.
+   When the module has several entry points that do different work, give each main
+   entry point its own short walk-through under a `###` heading named after it.
+5. **`## Where it happens`.** A short explanation of where this module sits in the
+   running application. Say whether it is at the top, where the application starts,
+   or several levels deep; what creates it and when, matching `hierarchy` and
+   `created_by` in the front matter; what calls it and at which point in a user's
+   journey or in the program's run; and how long it lives. Write this as prose, ground
+   it in the construction and calls actually found in the source, and link the
+   modules and screens involved.
+6. **`## Vocabulary`.** An explanation of every word in this description that a newcomer
    might not know. This includes the project's own terms, such as a name the team
    invented for one of its techniques, as well as technical terms and the names of other
    concepts in the project. Explain each word again here, in a sentence or two, even
@@ -288,13 +312,6 @@ always knows where to look:
    as a bullet that starts with the word in bold, followed by ` — ` and the
    explanation. Leave the section out only when every word in the description is
    everyday language.
-6. **`## Where it happens`.** A short explanation of where this module sits in the
-   running application. Say whether it is at the top, where the application starts,
-   or several levels deep; what creates it and when, matching `hierarchy` and
-   `created_by` in the front matter; what calls it and at which point in a user's
-   journey or in the program's run; and how long it lives. Write this as prose, ground
-   it in the construction and calls actually found in the source, and link the
-   modules and screens involved.
 
 After these sections, describe the rest of the module around the capabilities it
 offers, in whatever layout makes its contract clearest. Short operation sections,
