@@ -1,9 +1,9 @@
 ---
 title: mebasic
 version:
-  revision: 28
-  updated: "2026-10-13"
-  summary: "Flow adds a backwards pass from the flow files to the modules; editors step into switched-off stages."
+  revision: 29
+  updated: "2026-10-14"
+  summary: "Adds a Writing style section, the module sections What it does, Vocabulary and Where it happens, and lets corrected or unpinned text lose human attribution."
 summary: An AI-native language for understanding a project and shaping its structure around meaningful concepts.
 description: >
   mebasic explains source code in plain words and guides its organisation around
@@ -22,11 +22,8 @@ provider or implementation layout. It does not define how the program runs.
 
 Start with what the project does, who uses it, and its main concepts. Explain
 purpose and useful behaviour first, then let links lead to deeper detail.
+Write everything the way the Writing style section below describes.
 
-Always write in simple, plain language for a reader who is new to the project and
-may not be a programmer. Use short sentences and everyday words. When a technical
-term is needed, explain it in a few words the first time it appears. Prefer a
-concrete example to an abstract definition.
 Descriptions operate above individual functions: explain responsibilities,
 relationships and journeys, without inventories of functions or call signatures.
 The collection structure is mandatory; prose within it is flexible.
@@ -46,6 +43,43 @@ subfolder of the same name within the matching collection, or a broader module
 with its specialisations, and let it inform the creation hierarchy where the code
 confirms it. Do not copy purely technical folders such as `src/`, `lib/`, `build/`
 or `test/`, and do not let source folders override the collection structure below.
+
+## Writing style
+
+MeBasic is read by people who are new to the project, and many of them are not
+programmers. Every description should make sense to such a reader the first time
+they read it. This section explains how to write for them, and it applies to every
+collection.
+
+### Use plain words
+
+Choose everyday words and keep sentences short. When a technical term cannot be
+avoided, explain it in a few words the first time it appears in the file, even if
+another description already explains it, because the reader may have arrived from
+anywhere. A concrete example usually teaches more than an abstract definition, so
+give one whenever it helps the reader picture what is happening.
+
+### Write whole sentences
+
+Write the way a patient colleague explains something out loud. Each sentence should
+have a subject and a verb and should connect to the sentences around it, so that a
+paragraph reads as one line of thought. Do not write in a clipped, note-taking style
+that drops the words which join ideas together. For example, write "The store checks
+that every order has a customer before it saves the order" rather than "Checks
+customer. Saves order." Short sentences are welcome, but fragments and strings of
+labels are not, and a reader should never have to guess how two statements relate.
+
+The same applies inside lists. Each bullet or numbered step should be a complete
+sentence that makes sense on its own. When a few ideas belong together, a short
+paragraph usually explains them better than a list of fragments.
+
+### Give the text a helpful shape
+
+Use bullet points for facts that sit side by side, numbered steps for things that
+happen one after another, and tables when they make inputs, attributes or
+relationships easier to compare. Keep each explanation short and concrete. When a
+section would have nothing useful to say, leave it out rather than filling it with an
+empty heading or a sentence that only says there is nothing to add.
 
 ## Collections: meaning and generation
 
@@ -87,13 +121,11 @@ section and `###` beneath a section. Do not use bold text, underlined text or
 setext-style `===`/`---` lines as headings, and do not skip heading levels.
 
 Follow this opening with the category sections below. Use the given section names
-and order as reading templates; modules use the flexible service-contract guidance
-below. Omit sections that add no useful information rather than padding them with
-empty headings. Keep explanations short and concrete.
-Use bullets for parallel facts, numbered steps for sequences, and tables when they
-make inputs, attributes or relationships easier to compare. Do not list functions,
-method signatures or incidental implementation details; a module's API section,
-which names its entry points, is the one exception.
+and order as reading templates; modules use the fixed sections and service-contract
+guidance described under Modules. Write every section as the Writing style section
+describes. Do not list functions, method signatures or incidental implementation
+details; a module's API and Internal Functions sections, which name its entry points
+and significant internal functions, are the one exception.
 
 Link related descriptions where they are discussed so readers can move between
 views naturally. Keep supporting source references at the bottom. Clearly label
@@ -223,15 +255,51 @@ it does not require a separate process, deployment or network API. Describe actu
 interfaces and interactions; do not invent HTTP endpoints or a microservice
 architecture for a project that does not have them.
 
-Every module starts with the shared name, one-line summary and introductory
-paragraph. The introduction says what the module does and how it fits into the
-whole application, in simple words, before any detail: what part of the
-application it serves, which modules or screens use it, and what it relies on.
-Only then come the API and Internal Functions sections, followed by the rest of the
-description organised around the capabilities the module exposes, in whatever
-layout makes its contract clearest. Short operation sections, examples, prose or a
-table can all work. Apart from these two sections, there are no mandatory module
-headings, column names or section order after the opening.
+#### Module sections
+
+Every module description has the same sections, in this order, so that a reader
+always knows where to look:
+
+1. **Overview.** This is the shared opening: the title, the one-line summary and the
+   introductory paragraph. It has no heading of its own. The introduction says what
+   the module does and how it fits into the whole application, in simple words and
+   before any detail: which part of the application it serves, which modules or
+   screens use it, and what it relies on.
+2. **`## API`.** The entry points that other parts of the project call, as described
+   below.
+3. **`## Internal Functions`.** The module's own significant functions, as described
+   below. Leave it out when nothing is worth naming.
+4. **`## What it does`.** A list that walks through what the module actually does,
+   step by step, in the order it happens. Write each step as one plain sentence that
+   anyone could follow, such as "It checks that the order has at least one item, and
+   refuses it with a message if it does not." Describe the real behaviour found in the
+   source, not the names of the functions that carry it out. Number the steps when
+   they always happen in that order; use plain bullets when the module offers several
+   separate jobs, and give each job its own short run of steps.
+5. **`## Vocabulary`.** An explanation of every word in this description that a newcomer
+   might not know. This includes the project's own terms, such as a name the team
+   invented for one of its techniques, as well as technical terms and the names of other
+   concepts in the project. Explain each word again here, in a sentence or two, even
+   when another description already defines it, so the reader never has to leave the
+   page to understand it. Then link to the description that defines it or, when no
+   description does, name the source file that deals with it most. For example, if the
+   project calls one of its search steps "q-star", every module that mentions q-star
+   says briefly what it is and links to where it is explained in full. Write each entry
+   as a bullet that starts with the word in bold, followed by ` — ` and the
+   explanation. Leave the section out only when every word in the description is
+   everyday language.
+6. **`## Where it happens`.** A short explanation of where this module sits in the
+   running application. Say whether it is at the top, where the application starts,
+   or several levels deep; what creates it and when, matching `hierarchy` and
+   `created_by` in the front matter; what calls it and at which point in a user's
+   journey or in the program's run; and how long it lives. Write this as prose, ground
+   it in the construction and calls actually found in the source, and link the
+   modules and screens involved.
+
+After these sections, describe the rest of the module around the capabilities it
+offers, in whatever layout makes its contract clearest. Short operation sections,
+examples, prose or a table can all work, and there are no further mandatory
+headings or column names.
 
 #### API and Internal Functions sections
 
@@ -807,7 +875,12 @@ and generation history. Explain that deletion before asking the user to choose.
 Human authorship travels with the Markdown file. Record only the actual text
 inserted or replaced by the human; changing one character does not attribute a
 paragraph, list, heading or whole document to them. Loading a file or an AI update
-never makes its text human-authored. Editors highlight the precise human ranges
+never makes its text human-authored. Attribution follows what is actually different
+from the text before the edit, so when a person changes something by mistake and
+then changes it back, or retypes the same wording, nothing becomes human-authored.
+Editors also let the person unpin human attribution from text they do not want
+protected, and pin text they do want protected; unpinned text is ordinary revisable
+text again. Editors highlight the precise human ranges
 and hide provenance metadata from the editable text, selections and clipboard.
 
 Store precise attribution in a terminal HTML comment on its own line:
